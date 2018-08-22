@@ -1,5 +1,8 @@
 Read out and disassemble the on-chip bootrom in the Samsung S5P6818
 
+The file bootrom.txt is the final product and probably what you
+want to look at.
+
 This is part of my attempt to understand the details of how my NanoPi Fire3
 board boots.
 
