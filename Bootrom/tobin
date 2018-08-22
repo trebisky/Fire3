@@ -1,0 +1,19 @@
+#!/bin/ruby
+
+# 00000000: e59ff018 e59ff018 e59ff018 e59ff018    ................
+# 00000010: e59ff018 eafffffe e59ff018 e59ff018    ................
+
+of = File.new "bootrom.bin", "w+"
+
+File.foreach("uboot.out") { |line|
+    w = line.split
+    data = Array.new
+    data << w[1].to_i(16)
+    data << w[2].to_i(16)
+    data << w[3].to_i(16)
+    data << w[4].to_i(16)
+    buf = data.pack("LLLL")
+    of.write buf
+}
+
+# THE END
