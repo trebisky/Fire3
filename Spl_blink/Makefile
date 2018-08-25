@@ -29,6 +29,7 @@ LDFLAGS		:=	-Bstatic \
 CC			=	$(CROSS_COMPILE)gcc $(CFLAGS)
 LD 			=	$(CROSS_COMPILE)gcc $(LDFLAGS)
 OBJCOPY			=	$(CROSS_COMPILE)objcopy
+DUMP			=	$(CROSS_COMPILE)objdump
 
 BUILD			=	tools/build
 LOAD			=	tools/load
@@ -56,7 +57,12 @@ $(TARGET): $(BOARD).elf
 	@echo " [IMG]  $(BOARD)_nonsih.img"
 	@$(OBJCOPY) -O binary $(BOARD).elf $(BOARD)_nonsih.img
 	@echo " [IMG]  $(BOARD).img"
-	@$(BUILD) tools/nsih.bin $(BOARD)_nonsih.img $(BOARD).img
+	@$(BUILD) tools/nsih.bin $(BOARD)_nonsih.img $(TARGET)
+
+# This dumps the image before the NSIH header has been added,
+# so we will see a big block of zeros at the start.
+dis: $(BOARD).elf
+	$(DUMP) -d $(BOARD).elf -z >$(BOARD).dis
 
 # -------------------
 # You will need to be root for either of these to work.
@@ -73,6 +79,7 @@ clean:
 	rm -f *.img
 	rm -f *.elf
 	rm -f *.map
+	rm -f *.dis
 #	rm -f *.d
 
 # THE END

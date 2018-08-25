@@ -4,6 +4,27 @@
 ;
 ; Tom Trebisky  8-25-2018
 
+; The interesting part of this is that it handles the transition
+; from 32 bit to 64 bit on the armv8.
+; The on-chip bootloader runs in 32 bit mode (so apparently these
+; Cortex-A53 cores come out of reset running in 32 bit mode).
+; The on-chip bootloader loads this image to on-chip static ram
+; at address 0xffff0000 and then branches to 0xffff0000,
+; still running in 32 bit mode.
+;
+; When the smoke clears from this code running, it must switch
+; to 64 bit mode and start running code at 0xffff0800 --
+; At least that is what -must- happen since that is where
+; the 64 bit code is waiting at.
+;
+; But where is this address in the code that follows?
+;
+; I do have to point out that putting a 2K block of zeros at the
+; start of the executable is somewhat extravagant, or seems so
+; unless there is some need to be aligned at that boundary for
+; the transition to 64 bit mode.  Only 512 bytes is needed for
+; this header.
+
 ffff0000 <.text>:
 ffff0000:	ea000015 	b	0xffff005c
 ffff0004:	ea00003c 	b	0xffff00fc
@@ -39,6 +60,10 @@ ffff0068:	e3431fff 	movt	r1, #0x3fff
 ffff006c:	e3002000 	movw	r2, #0		; r2 = 0
 ffff0070:	e3402000 	movt	r2, #0
 
+; Registers at 0xC001_1000 are "tieoff" block registers.
+; See page 4-32 in the s5p6818 user manual.
+; The ones fiddled with here are all labelled as "ARM configuration registers"
+
 ffff0074:	e5801140 	str	r1, [r0, #320]	; r1 --> 0xc0011140
 ffff0078:	e5802144 	str	r2, [r0, #324]	; r2 --> 0xc0011144
 ffff007c:	e5801148 	str	r1, [r0, #328]	; r1 --> 0xc0011148
@@ -64,6 +89,7 @@ ffff00c0:	e5901180 	ldr	r1, [r0, #384]	; r1 <-- 0x0xc0011180
 ffff00c4:	e38110f0 	orr	r1, r1, #0xf0
 ffff00c8:	e5801180 	str	r1, [r0, #384]	; 0x180
 
+; page 4-156 in the user manual
 ffff00cc:	e5901138 	ldr	r1, [r0, #312]	; 0x138
 ffff00d0:	e381160f 	orr	r1, r1, #0xf00000
 ffff00d4:	e5801138 	str	r1, [r0, #312]	; 0x138
@@ -71,6 +97,9 @@ ffff00d4:	e5801138 	str	r1, [r0, #312]	; 0x138
 ffff00d8:	e590117c 	ldr	r1, [r0, #380]	; 0x17c
 ffff00dc:	e3811a0f 	orr	r1, r1, #0xf000
 ffff00e0:	e580117c 	str	r1, [r0, #380]	; 0x17c
+
+; This is in the "clkpwr" block of the s5p6818
+; it may be an undocumented register.
 
 ffff00e4:	e3000000 	movw	r0, #0		; r0 = 0xc0010000
 ffff00e8:	e34c0001 	movt	r0, #0xc001
@@ -82,19 +111,24 @@ ffff00f4:	e58012ac 	str	r1, [r0, #684]	; 0xc00102ac
 ffff00f8:	e320f003 	wfi
 
 ; Any interrupts or exceptions come here.
+;
+; The end result is to turn out the on-board LED on GPIO B12.
 
 ffff00fc:	e30b0000 	movw	r0, #0xb000	; r0 = 0xc001b000 (GPIO B)
 ffff0100:	e34c0001 	movt	r0, #0xc001
 
+; GPIO Alt Function register
 ffff0104:	e5901020 	ldr	r1, [r0, #32]
 ffff0108:	e3c11403 	bic	r1, r1, #50331648	; 0x3000000
 ffff010c:	e3811402 	orr	r1, r1, #33554432	; 0x2000000
 ffff0110:	e5801020 	str	r1, [r0, #32]
 
+; GPIO data register
 ffff0114:	e5901000 	ldr	r1, [r0]
 ffff0118:	e3811a01 	orr	r1, r1, #4096	; 0x1000
 ffff011c:	e5801000 	str	r1, [r0]
 
+; GPIO output enable register
 ffff0120:	e5901004 	ldr	r1, [r0, #4]
 ffff0124:	e3811a01 	orr	r1, r1, #4096	; 0x1000
 ffff0128:	e5801004 	str	r1, [r0, #4]
