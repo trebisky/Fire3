@@ -82,7 +82,10 @@ char *rom_image;
 char *elf_image;
 char *sym_file;
 
-/* These must be hand edited */
+/* It used to be that these  must be hand edited
+ * Now these are just defaults, and are usually
+ * overridden on the command line.
+ */
 unsigned int rombase = 0x0;
 unsigned int entry = 0x0;
 
@@ -136,6 +139,12 @@ int gnusize;
 
 int mk_phdr ( int );
 
+static void use ( void )
+{
+	fprintf ( stderr, "Usage: wrap [options] bin elf [symfile]\n" );
+	exit ( 1 );
+}
+
 /*
  * Here is what an elf file looks like:
  *
@@ -169,21 +178,45 @@ int main ( int argc, char **argv )
 	int sym_size;
 	int syst_size;
 	int nsy;
+	unsigned long val;
 
-	/* Extra argument is symbol file */
-	sym_file = NULL;
-	if ( argc == 4 ) {
-	    sym_file = argv[3];
+	if ( argc < 2 ) {
+	    use ();
+	}
+
+	argv++;
+	argc--;
+
+	while ( argv[0][0] == '-' ) {
+	    if ( argv[0][1] == 'b' ) {
+		val = strtol ( &argv[0][2], NULL, 16 );
+		printf ( "Set base: %08x\n", val );
+		rombase = val;
+	    } else if ( argv[0][1] == 'e' ) {
+		val = strtol ( &argv[0][2], NULL, 16 );
+		printf ( "Set entry: %08x\n", val );
+		entry = val;
+	    } else {
+		// fprintf ( stderr, "Skipping: %s\n", argv[0] );
+	    }
+	    argv++;
 	    argc--;
 	}
 
-	if ( argc != 3 ) {
-	    fprintf ( stderr, "Usage: wrap bin elf\n" );
-	    exit ( 1 );
+	/* Extra argument is symbol file */
+	sym_file = NULL;
+
+	if ( argc == 3 ) {
+	    sym_file = argv[2];
+	    argc--;
 	}
 
-	rom_image = argv[1];
-	elf_image = argv[2];
+	if ( argc != 2 ) {
+	    use ();
+	}
+
+	rom_image = argv[0];
+	elf_image = argv[1];
 
 	printf ( "Reading image: %s\n", rom_image );
 	rom = open ( rom_image, O_RDONLY );

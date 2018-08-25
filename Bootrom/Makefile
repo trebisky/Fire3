@@ -23,7 +23,7 @@ bootrom.dis: bootrom.elf
 	$(DUMP) $(MACH) -d bootrom.elf -z >bootrom.dis
 
 bootrom.elf:	wrap bootrom.bin
-	./wrap bootrom.bin bootrom.elf
+	./wrap -b0 -e0 bootrom.bin bootrom.elf
 
 bootrom.bin:	uboot.out
 	./tobin
