@@ -2,6 +2,10 @@ Boot_NSIH
 
 This is part of understanding how the s5p6818 SoC on the NanoPi Fire3 boots.
 
+The most interesting thing here is probably nsih.txt,
+which is my annotated disassembly of nsih.bin.
+All the rest are tools that led to this.
+
 This is a research and reverse engineering project.
 It began with Github project "s5p6818_spl" by Metro94.
 
