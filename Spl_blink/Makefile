@@ -9,7 +9,7 @@ CROSS_COMPILE = aarch64-linux-gnu-
 
 # -------------------------------------
 
-OBJS = start.o exceptions.o boot.o
+OBJS = start.o boot.o
 
 TARGET = $(BOARD).img
 
@@ -54,10 +54,11 @@ $(BOARD).elf: $(OBJS)
 	@$(LD) $(OBJS) -o $(BOARD).elf
 
 $(TARGET): $(BOARD).elf
-	@echo " [IMG]  $(BOARD)_nonsih.img"
+	@#echo " [IMG]  $(BOARD)_nonsih.img"
 	@$(OBJCOPY) -O binary $(BOARD).elf $(BOARD)_nonsih.img
 	@echo " [IMG]  $(BOARD).img"
 	@$(BUILD) tools/nsih.bin $(BOARD)_nonsih.img $(TARGET)
+	@rm -f $(BOARD)_nonsih.img
 
 # This dumps the image before the NSIH header has been added,
 # so we will see a big block of zeros at the start.

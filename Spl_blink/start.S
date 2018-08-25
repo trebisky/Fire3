@@ -18,7 +18,7 @@
 	.global boot_slave
 
 	// Global constants declare
-	.global vectors
+	// .global vectors
 
 	.align 9
 
@@ -187,5 +187,43 @@ getCPUID:
 	and		x1, x1, #0xF		// Get Affinity Level 1
 	orr		x0, x0, x1
 	ret
+
+// append exceptions.S
+
+	.align 11
+//	.global vectors
+vectors:
+
+	.align 7
+sync_el0:
+	b		.
+
+	.align 7
+irq_el0:
+	b		.
+
+	.align 7
+fiq_el0:
+	b		.
+
+	.align 7
+serror_el0:
+	b		.
+
+	.align 7
+sync_elx:
+	b		.
+
+	.align 7
+irq_elx:
+	b		.
+
+	.align 7
+fiq_elx:
+	b		.
+
+	.align 7
+serror_elx:
+	b		.
 
 // THE END
