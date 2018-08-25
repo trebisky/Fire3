@@ -7,7 +7,11 @@
 BOARD = Fire3
 CROSS_COMPILE = aarch64-linux-gnu-
 
+# -------------------------------------
+
 OBJS = start.o exceptions.o boot.o
+
+TARGET = $(BOARD).img
 
 CFLAGS		:=	-g -Wall -Wextra -ffreestanding -fno-builtin -mlittle-endian
 CFLAGS		+= -march=armv8-a+crc
@@ -40,20 +44,28 @@ LOAD			=	tools/load
 	@echo " [CC]   $<"
 	@$(CC) $< -c -o $@
 
-all: build
+# -------------------------------------
+
+all: $(TARGET)
 
 $(BOARD).elf: $(OBJS)
 	@echo " [LD]   $(BOARD).elf"
-	$(LD) $(OBJS) -o $(BOARD).elf
+	@$(LD) $(OBJS) -o $(BOARD).elf
 
-build: $(BOARD).elf
+$(TARGET): $(BOARD).elf
 	@echo " [IMG]  $(BOARD)_nonsih.img"
 	@$(OBJCOPY) -O binary $(BOARD).elf $(BOARD)_nonsih.img
 	@echo " [IMG]  $(BOARD).img"
 	@$(BUILD) tools/nsih.bin $(BOARD)_nonsih.img $(BOARD).img
 
-install: 
-	$(LOAD) $(BOARD).img
+# -------------------
+# You will need to be root for either of these to work.
+
+usb:  $(TARGET)
+	$(LOAD) $(TARGET)
+
+sdcard:  $(TARGET)
+	dd if=$(TARGET) of=/dev/sdf seek=1 conv=fdatasync
 
 .PHONY: clean
 clean:

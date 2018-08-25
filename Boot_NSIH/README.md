@@ -27,8 +27,14 @@ does is two things:
 2. It changes one word as follows.
 
 diff nsih.odx final_nsih.odx
-00000040 0000 0000 0000 0000 0000 ffff 0000 ffff
-00000040 0000 0000 8012 0000 0000 ffff 0000 ffff
+1. 00000040 0000 0000 0000 0000 0000 ffff 0000 ffff
+2. 00000040 0000 0000 8012 0000 0000 ffff 0000 ffff
+
+A lucky guess would be that this is the number of bytes following the
+512 byte header.  The file I am experimenting with has 5248 bytes.
+5248 - 512 = 4736 and 4736 is 0x1280.  The ARM is little endian,
+so this is either stored as a 16 byte thing at 0x44 or a 32 bit thing
+at 0x44.
 
 
 For more information, see:
