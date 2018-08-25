@@ -1,8 +1,8 @@
-
-nsih.elf:     file format elf32-littlearm
-
-
-Disassembly of section .text:
+; Disassembly of nsih.bin for the S5P6818
+; This can be used on the NanoPi Fire3 or M3 as the first 512 bytes
+; of a standalone executable.
+;
+; Tom Trebisky  8-25-2018
 
 ffff0000 <.text>:
 ffff0000:	ea000015 	b	0xffff005c
@@ -14,127 +14,114 @@ ffff0014:	ea000038 	b	0xffff00fc
 ffff0018:	ea000037 	b	0xffff00fc
 ffff001c:	ea000036 	b	0xffff00fc
 
-ffff0020:	00000000 	andeq	r0, r0, r0
-ffff0024:	00000000 	andeq	r0, r0, r0
-ffff0028:	00000000 	andeq	r0, r0, r0
-ffff002c:	00000000 	andeq	r0, r0, r0
-ffff0030:	00000000 	andeq	r0, r0, r0
-ffff0034:	00000000 	andeq	r0, r0, r0
-ffff0038:	00000000 	andeq	r0, r0, r0
-ffff003c:	00000000 	andeq	r0, r0, r0
-ffff0040:	00000000 	andeq	r0, r0, r0
-ffff0044:	00000000 	andeq	r0, r0, r0
-ffff0048:	ffff0000 			; <UNDEFINED> instruction: 0xffff0000
-ffff004c:	ffff0000 			; <UNDEFINED> instruction: 0xffff0000
-ffff0050:	00000000 	andeq	r0, r0, r0
-ffff0054:	00000000 	andeq	r0, r0, r0
-ffff0058:	00000000 	andeq	r0, r0, r0
+ffff0020:	00000000
+ffff0024:	00000000
+ffff0028:	00000000
+ffff002c:	00000000
+ffff0030:	00000000
+ffff0034:	00000000
+ffff0038:	00000000
+ffff003c:	00000000
+ffff0040:	00000000
+ffff0044:	00000000	; < this gets modified when installed
+ffff0048:	ffff0000
+ffff004c:	ffff0000
+ffff0050:	00000000
+ffff0054:	00000000
+ffff0058:	00000000
 
-ffff005c:	e3010000 	movw	r0, #4096	; 0x1000
-ffff0060:	e34c0001 	movt	r0, #49153	; 0xc001
-ffff0064:	e30c1200 	movw	r1, #49664	; 0xc200
-ffff0068:	e3431fff 	movt	r1, #16383	; 0x3fff
-ffff006c:	e3002000 	movw	r2, #0
+; startup comes here.
+
+ffff005c:	e3010000 	movw	r0, #0x1000	; r0 = 0xc0011000
+ffff0060:	e34c0001 	movt	r0, #0xc001
+ffff0064:	e30c1200 	movw	r1, #0xc200	; r1 = 0x3fffc200
+ffff0068:	e3431fff 	movt	r1, #0x3fff
+ffff006c:	e3002000 	movw	r2, #0		; r2 = 0
 ffff0070:	e3402000 	movt	r2, #0
-ffff0074:	e5801140 	str	r1, [r0, #320]	; 0x140
-ffff0078:	e5802144 	str	r2, [r0, #324]	; 0x144
-ffff007c:	e5801148 	str	r1, [r0, #328]	; 0x148
-ffff0080:	e580214c 	str	r2, [r0, #332]	; 0x14c
-ffff0084:	e5801150 	str	r1, [r0, #336]	; 0x150
-ffff0088:	e5802154 	str	r2, [r0, #340]	; 0x154
-ffff008c:	e5801158 	str	r1, [r0, #344]	; 0x158
-ffff0090:	e580215c 	str	r2, [r0, #348]	; 0x15c
-ffff0094:	e5801184 	str	r1, [r0, #388]	; 0x184
-ffff0098:	e5802188 	str	r2, [r0, #392]	; 0x188
-ffff009c:	e580118c 	str	r1, [r0, #396]	; 0x18c
-ffff00a0:	e5802190 	str	r2, [r0, #400]	; 0x190
-ffff00a4:	e5801194 	str	r1, [r0, #404]	; 0x194
-ffff00a8:	e5802198 	str	r2, [r0, #408]	; 0x198
-ffff00ac:	e580119c 	str	r1, [r0, #412]	; 0x19c
-ffff00b0:	e58021a0 	str	r2, [r0, #416]	; 0x1a0
-ffff00b4:	e590113c 	ldr	r1, [r0, #316]	; 0x13c
-ffff00b8:	e3811a0f 	orr	r1, r1, #61440	; 0xf000
+
+ffff0074:	e5801140 	str	r1, [r0, #320]	; r1 --> 0xc0011140
+ffff0078:	e5802144 	str	r2, [r0, #324]	; r2 --> 0xc0011144
+ffff007c:	e5801148 	str	r1, [r0, #328]	; r1 --> 0xc0011148
+ffff0080:	e580214c 	str	r2, [r0, #332]	; r2 --> 0xc001114c
+ffff0084:	e5801150 	str	r1, [r0, #336]	; r1 --> 0xc0011150
+ffff0088:	e5802154 	str	r2, [r0, #340]	; r2 --> 0xc0011154
+ffff008c:	e5801158 	str	r1, [r0, #344]	; r1 --> 0xc0011158
+ffff0090:	e580215c 	str	r2, [r0, #348]	; r2 --> 0xc001115c
+ffff0094:	e5801184 	str	r1, [r0, #388]	; r1 --> 0xc0011184
+ffff0098:	e5802188 	str	r2, [r0, #392]	; r2 --> 0xc0011188
+ffff009c:	e580118c 	str	r1, [r0, #396]	; r1 --> 0xc001118c
+ffff00a0:	e5802190 	str	r2, [r0, #400]	; r2 --> 0xc0011190
+ffff00a4:	e5801194 	str	r1, [r0, #404]	; r1 --> 0xc0011194
+ffff00a8:	e5802198 	str	r2, [r0, #408]	; r2 --> 0xc0011198
+ffff00ac:	e580119c 	str	r1, [r0, #412]	; r1 --> 0xc001119c
+ffff00b0:	e58021a0 	str	r2, [r0, #416]	; r2 --> 0xc00111a0
+
+ffff00b4:	e590113c 	ldr	r1, [r0, #316]	; r1 <-- 0xc001113c
+ffff00b8:	e3811a0f 	orr	r1, r1, #0xf000
 ffff00bc:	e580113c 	str	r1, [r0, #316]	; 0x13c
-ffff00c0:	e5901180 	ldr	r1, [r0, #384]	; 0x180
-ffff00c4:	e38110f0 	orr	r1, r1, #240	; 0xf0
+
+ffff00c0:	e5901180 	ldr	r1, [r0, #384]	; r1 <-- 0x0xc0011180
+ffff00c4:	e38110f0 	orr	r1, r1, #0xf0
 ffff00c8:	e5801180 	str	r1, [r0, #384]	; 0x180
+
 ffff00cc:	e5901138 	ldr	r1, [r0, #312]	; 0x138
-ffff00d0:	e381160f 	orr	r1, r1, #15728640	; 0xf00000
+ffff00d0:	e381160f 	orr	r1, r1, #0xf00000
 ffff00d4:	e5801138 	str	r1, [r0, #312]	; 0x138
+
 ffff00d8:	e590117c 	ldr	r1, [r0, #380]	; 0x17c
-ffff00dc:	e3811a0f 	orr	r1, r1, #61440	; 0xf000
+ffff00dc:	e3811a0f 	orr	r1, r1, #0xf000
 ffff00e0:	e580117c 	str	r1, [r0, #380]	; 0x17c
-ffff00e4:	e3000000 	movw	r0, #0
-ffff00e8:	e34c0001 	movt	r0, #49153	; 0xc001
-ffff00ec:	e59012ac 	ldr	r1, [r0, #684]	; 0x2ac
+
+ffff00e4:	e3000000 	movw	r0, #0		; r0 = 0xc0010000
+ffff00e8:	e34c0001 	movt	r0, #0xc001
+
+ffff00ec:	e59012ac 	ldr	r1, [r0, #684]	; 0xc00102ac
 ffff00f0:	e3811001 	orr	r1, r1, #1
-ffff00f4:	e58012ac 	str	r1, [r0, #684]	; 0x2ac
+ffff00f4:	e58012ac 	str	r1, [r0, #684]	; 0xc00102ac
 
 ffff00f8:	e320f003 	wfi
 
-ffff00fc:	e30b0000 	movw	r0, #45056	; 0xb000
-ffff0100:	e34c0001 	movt	r0, #49153	; 0xc001
+; Any interrupts or exceptions come here.
+
+ffff00fc:	e30b0000 	movw	r0, #0xb000	; r0 = 0xc001b000 (GPIO B)
+ffff0100:	e34c0001 	movt	r0, #0xc001
+
 ffff0104:	e5901020 	ldr	r1, [r0, #32]
 ffff0108:	e3c11403 	bic	r1, r1, #50331648	; 0x3000000
 ffff010c:	e3811402 	orr	r1, r1, #33554432	; 0x2000000
 ffff0110:	e5801020 	str	r1, [r0, #32]
+
 ffff0114:	e5901000 	ldr	r1, [r0]
 ffff0118:	e3811a01 	orr	r1, r1, #4096	; 0x1000
 ffff011c:	e5801000 	str	r1, [r0]
+
 ffff0120:	e5901004 	ldr	r1, [r0, #4]
 ffff0124:	e3811a01 	orr	r1, r1, #4096	; 0x1000
 ffff0128:	e5801004 	str	r1, [r0, #4]
-ffff012c:	eafffffe 	b	0xffff012c
 
-ffff0130:	73696854 	cmnvc	r9, #84, 16	; 0x540000
-ffff0134:	20736920 	rsbscs	r6, r3, r0, lsr #18
-ffff0138:	6f622061 	svcvs	0x00622061
-ffff013c:	6820746f 	stmdavs	r0!, {r0, r1, r2, r3, r5, r6, sl, ip, sp, lr}
-ffff0140:	65646165 	strbvs	r6, [r4, #-357]!	; 0xfffffe9b
-ffff0144:	6f662072 	svcvs	0x00662072
-ffff0148:	654e2072 	strbvs	r2, [lr, #-114]	; 0xffffff8e
-ffff014c:	6c6c6578 	cfstr64vs	mvdx6, [ip], #-480	; 0xfffffe20
-ffff0150:	50355320 	eorspl	r5, r5, r0, lsr #6
-ffff0154:	38313836 	ldmdacc	r1!, {r1, r2, r4, r5, fp, ip, sp}
-ffff0158:	74697720 	strbtvc	r7, [r9], #-1824	; 0xfffff8e0
-ffff015c:	20612068 	rsbcs	r2, r1, r8, rrx
-ffff0160:	706d6973 	rsbvc	r6, sp, r3, ror r9
-ffff0164:	7020656c 	eorvc	r6, r0, ip, ror #10
-ffff0168:	6f6c6572 	svcvs	0x006c6572
-ffff016c:	72656461 	rsbvc	r6, r5, #1627389952	; 0x61000000
-ffff0170:	5043202e 	subpl	r2, r3, lr, lsr #32
-ffff0174:	77203055 			; <UNDEFINED> instruction: 0x77203055
-ffff0178:	206c6c69 	rsbcs	r6, ip, r9, ror #24
-ffff017c:	74697773 	strbtvc	r7, [r9], #-1907	; 0xfffff88d
-ffff0180:	74206863 	strtvc	r6, [r0], #-2147	; 0xfffff79d
-ffff0184:	4141206f 	cmpmi	r1, pc, rrx
-ffff0188:	36686372 			; <UNDEFINED> instruction: 0x36686372
-ffff018c:	74732034 	ldrbtvc	r2, [r3], #-52	; 0xffffffcc
-ffff0190:	69747261 	ldmdbvs	r4!, {r0, r5, r6, r9, ip, sp, lr}^
-ffff0194:	6120676e 			; <UNDEFINED> instruction: 0x6120676e
-ffff0198:	78302074 	ldmdavc	r0!, {r2, r4, r5, r6, sp}
-ffff019c:	66666666 	strbtvs	r6, [r6], -r6, ror #12
-ffff01a0:	30303830 	eorscc	r3, r0, r0, lsr r8
-ffff01a4:	6649202e 	strbvs	r2, [r9], -lr, lsr #32
-ffff01a8:	63786520 	cmnvs	r8, #32, 10	; 0x8000000
-ffff01ac:	69747065 	ldmdbvs	r4!, {r0, r2, r5, r6, ip, sp, lr}^
-ffff01b0:	20736e6f 	rsbscs	r6, r3, pc, ror #28
-ffff01b4:	7563636f 	strbvc	r6, [r3, #-879]!	; 0xfffffc91
-ffff01b8:	6e692072 	mcrvs	0, 3, r2, cr9, cr2, {3}
-ffff01bc:	72414120 	subvc	r4, r1, #32, 2
-ffff01c0:	32336863 	eorscc	r6, r3, #6488064	; 0x630000
-ffff01c4:	646f6d20 	strbtvs	r6, [pc], #-3360	; 0xffff01cc
-ffff01c8:	69772065 	ldmdbvs	r7!, {r0, r2, r5, r6, sp}^
-ffff01cc:	756f6874 	strbvc	r6, [pc, #-2164]!	; 0xfffef960
-ffff01d0:	65732074 	ldrbvs	r2, [r3, #-116]!	; 0xffffff8c
-ffff01d4:	6e697474 	mcrvs	4, 3, r7, cr9, cr4, {3}
-ffff01d8:	42562067 	subsmi	r2, r6, #103	; 0x67
-ffff01dc:	202c5241 	eorcs	r5, ip, r1, asr #4
-ffff01e0:	20555043 	subscs	r5, r5, r3, asr #32
-ffff01e4:	6c6c6977 			; <UNDEFINED> instruction: 0x6c6c6977
-ffff01e8:	6f726420 	svcvs	0x00726420
-ffff01ec:	6e692070 	mcrvs	0, 3, r2, cr9, cr0, {3}
-ffff01f0:	61656420 	cmnvs	r5, r0, lsr #8
-ffff01f4:	6f6c2064 	svcvs	0x006c2064
-ffff01f8:	202e706f 	eorcs	r7, lr, pc, rrx
-ffff01fc:	4849534e 	stmdami	r9, {r1, r2, r3, r6, r8, r9, ip, lr}^
+ffff012c:	eafffffe 	b	0xffff012c	; *** spin ***
+
+; This begins a big block of text that is oddly
+; crammed in here.
+
+;   This is a boot header for Nexell
+;   S5P6818 with a simple preloader.
+;   CPU0 will switch to AArch64 starting at 0xffff0800.
+;   If exceptions occur in AArch32 mode without setting VBAR,
+;   CPU will drop in dead loop.
+
+; ffff0130 5468 6973 2069 7320 6120 626f 6f74 2068   This is a boot h
+; ffff0140 6561 6465 7220 666f 7220 4e65 7865 6c6c   eader for Nexell
+; ffff0150 2053 3550 3638 3138 2077 6974 6820 6120    S5P6818 with a
+; ffff0160 7369 6d70 6c65 2070 7265 6c6f 6164 6572   simple preloader
+; ffff0170 2e20 4350 5530 2077 696c 6c20 7377 6974   . CPU0 will swit
+; ffff0180 6368 2074 6f20 4141 7263 6836 3420 7374   ch to AArch64 st
+; ffff0190 6172 7469 6e67 2061 7420 3078 6666 6666   arting at 0xffff
+; ffff01a0 3038 3030 2e20 4966 2065 7863 6570 7469   0800. If excepti
+; ffff01b0 6f6e 7320 6f63 6375 7220 696e 2041 4172   ons occur in AAr
+; ffff01c0 6368 3332 206d 6f64 6520 7769 7468 6f75   ch32 mode withou
+; ffff01d0 7420 7365 7474 696e 6720 5642 4152 2c20   t setting VBAR,
+; ffff01e0 4350 5520 7769 6c6c 2064 726f 7020 696e   CPU will drop in
+; ffff01f0 2064 6561 6420 6c6f 6f70 2e20 4e53 4948    dead loop. NSIH
+
+ffff01fc:	4849534e	; the magic "NSIH" that is required
