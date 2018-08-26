@@ -46,7 +46,7 @@ reset:
 	adr		x0, vectors
 	msr		VBAR_EL3, x0
 
-	ands	x0, x29, #3
+	ands		x0, x29, #3
 	bne		prepare_cpu		// if (CPUID != 0 && CPUID != 4) skip clear_bss & set_cache
 	cmp		x29, xzr
 	bne		set_cache		// if (CPUID != 0) skip clear_bss
@@ -174,6 +174,7 @@ make_stack:
 	b		.
 
 1:
+	ands		x0, x29, #3		// tjt -- call with cpu number
 	b		boot_slave
 	b		.
 
