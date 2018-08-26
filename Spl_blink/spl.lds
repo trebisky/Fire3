@@ -5,11 +5,12 @@ ENTRY(start)
 
 SECTIONS
 {
-	. = 0x00000000ffff0000;
+/*	. = 0x00000000ffff0000;		*/
+	. = 0x00000000ffff0800;
 	. = ALIGN(4);
 	.text :
 	{
-		start.o	(.text)
+/*		start.o	(.text)		*/
 		*(.text)
 	}
 

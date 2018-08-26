@@ -23,7 +23,8 @@
 	.align 9
 
 	// space for NSIH
-	.skip 0x800, 0x00
+	// .skip 0x800, 0x00
+	// tjt - no longer need this with my loader.
 
 	.global start
 start:
