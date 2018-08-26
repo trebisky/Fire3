@@ -4,7 +4,7 @@
 # tom@mmto.org
 # Metro94 <flattiles@gmail.com>
 
-BOARD = Fire3
+BOARD = fire3
 CROSS_COMPILE = aarch64-linux-gnu-
 
 # -------------------------------------

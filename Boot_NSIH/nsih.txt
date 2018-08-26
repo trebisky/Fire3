@@ -15,7 +15,7 @@
 ; When the smoke clears from this code running, it must switch
 ; to 64 bit mode and start running code at 0xffff0800 --
 ; At least that is what -must- happen since that is where
-; the 64 bit code is waiting at.
+; the 64 bit code is waiting at, and this scheme actually works.
 ;
 ; But where is this address in the code that follows?
 ;
@@ -43,10 +43,17 @@ ffff0030:	00000000
 ffff0034:	00000000
 ffff0038:	00000000
 ffff003c:	00000000
-ffff0040:	00000000
-ffff0044:	00000000	; < this gets modified when installed
-ffff0048:	ffff0000
-ffff004c:	ffff0000
+
+; Only the size field in the following gets modified when this
+; 512 byte header gets installed.  It will be the size of the file
+; (the file including the 512 byte header) minus 512.
+; In other words, the number of bytes following this header.
+
+ffff0040:	00000000	; must be zero
+ffff0044:	00000000	; load size (after this header)
+ffff0048:	ffff0000	; load address
+ffff004c:	ffff0000	; launch address
+
 ffff0050:	00000000
 ffff0054:	00000000
 ffff0058:	00000000
