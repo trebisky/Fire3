@@ -15,7 +15,7 @@
 /* from s5p_boot.h */
 #define SECOND_BOOT_ALL_MAX_SIZE	(56 * 1024)
 #define SECOND_BOOT_HEADER_SIZE		(512)
-#define SECOND_BOOT_OFFSET			(2048)
+#define SECOND_BOOT_OFFSET		(2048)
 
 #define SECOND_BOOT_DEVICEADDR		(0x00000000)
 #define SECOND_BOOT_LOADSIZE		(0x00000000)	// Calculated at runtime
@@ -30,26 +30,30 @@
 #define S5P6818_INTERFACE	(0)
 #define S5P6818_EP_OUT		((unsigned char)0x02)
 
+typedef unsigned char uint8;
+typedef unsigned int  uint32;
+
 /* --------------------------- */
+
+enum { NOHEADER, H32, H64 } header_type = NOHEADER;
+
+#define H32_SIZE	512
+#define H64_SIZE	2048
 
 /* tjt: 100M !! heck of a big buffer. */
 #define BOOTLOADER_MAX_SIZE	100 * 1024 * 1024
 
-typedef unsigned char uint8;
-typedef unsigned int  uint32;
-
-unsigned char buf[BOOTLOADER_MAX_SIZE];
+uint8 buf[BOOTLOADER_MAX_SIZE];
 
 int load_size;
 unsigned int load_addr = 0xffff0000;
 unsigned int launch_addr = 0xffff0000;
 
-enum { NOHEADER, H32, H64 } header_type = NOHEADER;
-int inject_header = 0;
-
 /* --------------------------- */
 
-void write32LE(uint8 *addr, uint32 data)
+/* This makes the code portable to big endian machines */
+void
+write_long (uint8 *addr, uint32 data)
 {
 	*(addr)     = (uint8)(data & 0xff);
 	*(addr + 1) = (uint8)((data >> 8) & 0xff);
@@ -57,32 +61,110 @@ void write32LE(uint8 *addr, uint32 data)
 	*(addr + 3) = (uint8)((data >> 24) & 0xff);
 }
 
-int
-mk_header32 ( uint8 *buf )
-{
-	write32LE(buf + 0x1fc, 0x4849534e);
-	return 0;
-}
+uint32	code64_at_0[] = {
+	0xea000015,
+	0xea00003c,
+	0xea00003b,
+	0xea00003a,
+	0xea000039,
+	0xea000038,
+	0xea000037,
+	0xea000036
+};
 
-int
+uint32	code64_at_5c[] = {
+	0xe3010000,
+	0xe34c0001,
+	0xe30c1200,
+	0xe3431fff,
+	0xe3002000,
+	0xe3402000,
+	0xe5801140,
+	0xe5802144,
+	0xe5801148,
+	0xe580214c,
+	0xe5801150,
+	0xe5802154,
+	0xe5801158,
+	0xe580215c,
+	0xe5801184,
+	0xe5802188,
+	0xe580118c,
+	0xe5802190,
+	0xe5801194,
+	0xe5802198,
+	0xe580119c,
+	0xe58021a0,
+	0xe590113c,
+	0xe3811a0f,
+	0xe580113c,
+	0xe5901180,
+	0xe38110f0,
+	0xe5801180,
+	0xe5901138,
+	0xe381160f,
+	0xe5801138,
+	0xe590117c,
+	0xe3811a0f,
+	0xe580117c,
+	0xe3000000,
+	0xe34c0001,
+	0xe59012ac,
+	0xe3811001,
+	0xe58012ac,
+	0xe320f003,
+	0xe30b0000,
+	0xe34c0001,
+	0xe5901020,
+	0xe3c11403,
+	0xe3811402,
+	0xe5801020,
+	0xe5901000,
+	0xe3811a01,
+	0xe5801000,
+	0xe5901004,
+	0xe3811a01,
+	0xe5801004,
+	0xeafffffe
+};
+
+void
 mk_header64 ( uint8 *buf )
 {
-	write32LE(buf + 0x1fc, 0x4849534e);
-	return 0;
+	int i, num;
+	uint8 *p;
+
+	num = sizeof(code64_at_0)/sizeof(uint32);
+	p = &buf[0];
+	for ( i=0; i<num; i++ ) {
+	    write_long ( p, code64_at_0[i] );
+	    p += sizeof(uint32);
+	}
+
+	num = sizeof(code64_at_5c)/sizeof(uint32);
+	p = &buf[0x5c];
+	for ( i=0; i<num; i++ ) {
+	    write_long ( p, code64_at_5c[i] );
+	    p += sizeof(uint32);
+	}
+
+	write_long (buf + 0x44, load_size - 512);
+	write_long (buf + 0x48, load_addr);
+	write_long (buf + 0x4c, launch_addr);
+
+	write_long (buf + 0x1fc, 0x4849534e);
 }
 
-void initBootloaderHeader (uint8 *buf )
+void
+mk_header32 ( uint8 *buf )
 {
-	// Clear buffer
-	memset(buf, 0x00, 512);
+	write_long (buf + 0x44, load_size - 512);
+	write_long (buf + 0x48, load_addr);
+	write_long (buf + 0x4c, launch_addr);
 
-	write32LE(buf + 0x40, 0x00000000);
-	write32LE(buf + 0x44, load_size);
-	write32LE(buf + 0x48, load_addr);
-	write32LE(buf + 0x4c, launch_addr);
-
-	write32LE(buf + 0x1fc, 0x4849534e);
+	write_long (buf + 0x1fc, 0x4849534e);
 }
+
 
 int
 readBin ( uint8 *buf, const char *filepath )
@@ -110,7 +192,7 @@ readBin ( uint8 *buf, const char *filepath )
 }
 
 int
-usbBoot ( uint8 *buf, int size )
+usbLoad ( uint8 *buf, int size )
 {
 	libusb_context        *ctx;
 	libusb_device        **list;
@@ -132,6 +214,7 @@ usbBoot ( uint8 *buf, int size )
 	dev_handle = libusb_open_device_with_vid_pid(ctx, S5P6818_VID, S5P6818_PID);
 	if ( dev_handle == NULL ) {
 	    fprintf ( stderr, "USB device for S5P6818 download not found\n" );
+	    fprintf ( stderr, "perhaps you need to be root or to reset the board\n" );
 	    return -1;
 	}
 
@@ -198,13 +281,29 @@ usage ( void )
 int
 main(int argc, const char *argv[])
 {
+	int inject_header = 0;
+	int emit_file = 0;
+
 	int offset;
 	int ret;
+	int file_size;
 
 	argc--;
 	argv++;
 
 	while ( argc && argv[0][0] == '-' ) {
+	    if ( strcmp ( "h64", &argv[0][1] ) == 0 ) {
+		header_type = H64;
+	    }
+	    if ( strcmp ( "h32", &argv[0][1] ) == 0 ) {
+		header_type = H32;
+	    }
+	    if ( strcmp ( "inject", &argv[0][1] ) == 0 ) {
+		inject_header = 1;
+	    }
+	    if ( argv[0][1] == 'o' ) {
+		emit_file = 1;
+	    }
 	    argc--;
 	    argv++;
 	}
@@ -212,63 +311,42 @@ main(int argc, const char *argv[])
 	if ( argc != 1 )
 	    usage ();
 
-	if ( header_type == H32 ) {
-	    offset = mk_header32 ( buf );
-	}
+	offset = 0;
 
-	if ( header_type == H64 ) {
-	    offset = mk_header64 ( buf );
-	}
+	if ( header_type == H32 )
+	    offset = H32_SIZE;
 
-	load_size = readBin ( &buf[offset], argv[0] );
-	if ( load_size <= 0 ) {
+	if ( header_type == H64 )
+	    offset = H64_SIZE;
+
+	if ( inject_header )
+	    offset = 0;
+
+	if ( offset )
+	    memset ( buf, 0x00, offset );
+
+	file_size = readBin ( &buf[offset], argv[0] );
+	if ( file_size <= 0 )
 	    exit ( 1 );
+
+	load_size = file_size + offset;
+
+	if ( header_type == H32 )
+	    mk_header32 ( buf );
+
+	if ( header_type == H64 )
+	    mk_header64 ( buf );
+
+	if ( emit_file ) {
+	    fwrite ( buf, 1, load_size, stdout );
+	    exit ( 0 );
 	}
 
-	ret = usbBoot ( buf, load_size );
+	ret = usbLoad ( buf, load_size );
 	if (ret < 0) {
 	    fprintf(stderr, "Download failed\n");
 	    exit ( 1 );
 	}
-
-#ifdef notdef
-
-	if (argc < 3 || argc > 4) {
-		fprintf(stderr, "Wrong Parameters\n");
-		printf("Usage: load bootloader load_addr [launch_addr]\n");
-		printf("If launch_addr is not passed or launch_addr equals to 0, bootloader will be loaded without executing it.\n");
-		return -1;
-	}
-	
-	if (sscanf(argv[2], "%x", &load_addr) != 1) {
-		fprintf(stderr, "Invalid Parameters \"load_addr\"\n");
-		printf("Usage: load bootloader load_addr [launch_addr]\n");
-		printf("If launch_addr is not passed or launch_addr equals to 0, bootloader will be loaded without executing it.\n");
-	}
-	
-	if (argc == 3) {
-		launch_addr = 0;
-	} else if (sscanf(argv[3], "%x", &launch_addr) != 1) {
-		fprintf(stderr, "Invalid Parameters \"launch_addr\"\n");
-		printf("Usage: load bootloader load_addr [launch_addr]\n");
-		printf("If launch_addr is not passed or launch_addr equals to 0, bootloader will be loaded without executing it.\n");
-	}
-
-	load_size = readBin(mem + 0x200, argv[1]);
-	if (size <= 0) {
-		fprintf(stderr, "Failed when loading bootloader\n");
-		return -1;
-	}
-
-	initBootloaderHeader(mem, size, load_addr, launch_addr);
-	size += 0x200;
-
-	ret = usbBoot(mem, load_size);
-	if (ret < 0) {
-		fprintf(stderr, "Failed when starting bootloader\n");
-		return -1;
-	}
-#endif
 
 	exit ( 0 );
 }

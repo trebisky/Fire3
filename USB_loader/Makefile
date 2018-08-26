@@ -17,5 +17,12 @@ all:	loader
 loader: loader.c
 	gcc -Wall -Wextra -Os loader.c $(USB_JIVE) -o loader
 
+test1:
+	./loader fire3.img
+
+test2:
+	dd if=fire3.img of=fire3_nohd.img skip=4
+	./loader -h64 fire3_nohd.img
+
 clean:
 	rm -f loader
