@@ -270,9 +270,9 @@ usbLoad ( uint8 *buf, int size )
  * load_addr and launch_addr default to 0xffff0000, but these can be overriden.
  *
  *   -l<addr> sets both to addr, which is a hex value (i.e. -lffff0800)
- *   -e<addr) sets launch_addr to <addr> (i.e. -effff0200)
+ *   -s<addr) sets launch_addr to <addr> (i.e. -sffff0200)
  *
- * if both -e and -l are used, -e must follow -l
+ * if both -l and -s are used, -s must follow -l
  */
 
 void
@@ -302,6 +302,7 @@ main(int argc, const char *argv[])
 	int offset;
 	int ret;
 	int file_size;
+	unsigned int val;
 
 	argc--;
 	argv++;
@@ -319,6 +320,18 @@ main(int argc, const char *argv[])
 	    if ( argv[0][1] == 'o' ) {
 		emit_file = 1;
 	    }
+	    if ( argv[0][1] == 'l' ) {
+		/* load address -lffff0000 */
+                val = strtol ( &argv[0][2], NULL, 16 );
+                load_addr = val;
+                launch_addr = val;
+	    }
+	    if ( argv[0][1] == 's' ) {
+		/* start address -sffff0800 */
+                val = strtol ( &argv[0][2], NULL, 16 );
+                launch_addr = val;
+	    }
+
 	    argc--;
 	    argv++;
 	}
