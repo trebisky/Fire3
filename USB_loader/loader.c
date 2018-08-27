@@ -46,7 +46,7 @@ enum { NOHEADER, H32, H64 } header_type = NOHEADER;
 uint8 buf[BOOTLOADER_MAX_SIZE];
 
 int load_size;
-unsigned int load_addr = 0xffff0000;
+unsigned int load_addr =   0xffff0000;
 unsigned int launch_addr = 0xffff0000;
 
 /* --------------------------- */
@@ -165,6 +165,7 @@ mk_header32 ( uint8 *buf )
 	write_long (buf + 0x1fc, 0x4849534e);
 }
 
+#define ALIGN	16
 
 int
 readBin ( uint8 *buf, const char *filepath )
@@ -181,12 +182,15 @@ readBin ( uint8 *buf, const char *filepath )
 
 	size = (int)fread(buf, 1, BOOTLOADER_MAX_SIZE, fin);
 	fclose(fin);
-	if (size <= 0)
-		return size;
 
-	// Size must be aligned by 16bytes
-	if (size % 16 != 0)
-		size = ((size / 16) + 1) * 16;
+	if (size <= 0) {
+	    fprintf ( stderr, "Empty file: %s\n", filepath );
+	    return -1;
+	}
+
+	// Size must be aligned by 16 bytes
+	if (size % ALIGN != 0)
+	    size = ((size / ALIGN) + 1) * ALIGN;
 
 	return size;
 }
@@ -278,6 +282,17 @@ usage ( void )
 	exit ( 1 );
 }
 
+/* I got weird behavior when downloading just a 512 byte executable.
+ * The download would work, but not start running.
+ * If I repeated the download without resetting the board,
+ * then it would run.
+ * Of course the size field in the header is zero, which must be
+ * causing some odd behavior in the on-chip bootrom.
+ * bumping the size up a notch fixes all this nicely.
+ */
+
+#define MIN_SIZE	512 + ALIGN
+
 int
 main(int argc, const char *argv[])
 {
@@ -311,6 +326,11 @@ main(int argc, const char *argv[])
 	if ( argc != 1 )
 	    usage ();
 
+	/* In case we get asked to inject into a binary
+	 * with size 512 or less.
+	 */
+	memset ( buf, 0x00, MIN_SIZE );
+
 	offset = 0;
 
 	if ( header_type == H32 )
@@ -330,6 +350,8 @@ main(int argc, const char *argv[])
 	    exit ( 1 );
 
 	load_size = file_size + offset;
+	if ( load_size <= 512 )
+	    load_size = MIN_SIZE;
 
 	if ( header_type == H32 )
 	    mk_header32 ( buf );
