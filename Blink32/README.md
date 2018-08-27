@@ -15,6 +15,11 @@ Use "make" to build the image, then either:
 This uses my USB_loader to put a proper header on the image and
 either download it by USB or put it on a flash card.
 
+The "tiny" image is a silly experiment (it works!) to see if
+all of the blink code will fit into the 512 byte header.
+We do have to add an extra 16 bytes of padding (now done
+by the USB_loader) for the bootrom to start running it though.
+
 For more information, see:
 
     http://cholla.mmto.org/fire3/

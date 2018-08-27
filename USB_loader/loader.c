@@ -158,6 +158,8 @@ mk_header64 ( uint8 *buf )
 void
 mk_header32 ( uint8 *buf )
 {
+	write_long (buf + 0, 0xea00007e );	/* b 0xffff0200 */
+
 	write_long (buf + 0x44, load_size - 512);
 	write_long (buf + 0x48, load_addr);
 	write_long (buf + 0x4c, launch_addr);
