@@ -22,18 +22,17 @@ naive.dis: bootrom.bin
 bootrom.dis: bootrom.elf
 	$(DUMP) $(MACH) -d bootrom.elf -z >bootrom.dis
 
-bootrom.elf:	wrap bootrom.bin
-	./wrap -b0 -e0 bootrom.bin bootrom.elf
+bootrom.elf:	arm_wrap bootrom.bin
+	./arm_wrap -b0 bootrom.bin bootrom.elf
 
 bootrom.bin:	uboot.out
 	./tobin
 
-wrap:	wrap.c
-	cc -o wrap wrap.c
+arm_wrap:
+	cp ../Arm_wrap/arm_wrap .
 
 clean:
 	rm -f naive.dis
 	rm -f bootrom.elf
 	rm -f bootrom.dis
 	rm -f bootrom.bin
-	rm -f wrap

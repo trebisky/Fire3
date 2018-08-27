@@ -60,6 +60,9 @@ $(TARGET): $(BOARD).elf
 dis: $(BOARD).elf
 	$(DUMP) -d $(BOARD).elf -z >$(BOARD).dis
 
+fetch:
+	cp ../USB_loader/loader tools
+
 # -------------------
 # You will need to be root for either of these to work.
 

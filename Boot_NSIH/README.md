@@ -38,8 +38,9 @@ A lucky guess would be that this is the number of bytes following the
 512 byte header.  The file I am experimenting with has 5248 bytes.
 5248 - 512 = 4736 and 4736 is 0x1280.  The ARM is little endian,
 so this is either stored as a 16 byte thing at 0x44 or a 32 bit thing
-at 0x44.
+at 0x44.  This is indeed true.
 
+As a bonus, you get my ruby script "odx" that does hex dumping in a way I like.
 
 For more information, see:
 

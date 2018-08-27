@@ -22,13 +22,12 @@ naive.dis: bl1.bin
 bl1.dis: bl1.elf
 	$(DUMP) $(MACH) -d bl1.elf -z >bl1.dis
 
-bl1.elf:	wrap bl1.bin
-	./wrap bl1.bin bl1.elf
+bl1.elf:	arm_wrap bl1.bin
+	./arm_wrap -bffff0000 bl1.bin bl1.elf
 
-wrap:	wrap.c
-	cc -o wrap wrap.c
+arm_wrap:
+	cp ../Arm_wrap/arm_wrap .
 
 clean:
 	rm -f *.dis
 	rm -f *.elf
-	rm -f wrap

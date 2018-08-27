@@ -1,4 +1,4 @@
-Spl_blink
+Blink64
 
 A first bit of bare metal programming for the NanoPi Fire3
 
@@ -13,6 +13,9 @@ Use "make" to build the image, then either:
 
 1. make usb -- to send it to a Fire3 without an SD card in place
 2. make sdcard - to put it onto an SD card that can then be "booted"
+
+This uses my USB_loader to install a header and either download
+it via USB or place it on a flash card.
 
 For more information, see:
 
