@@ -24,5 +24,8 @@ test2:
 	dd if=fire3.img of=fire3_nohd.img skip=4
 	./loader -h64 fire3_nohd.img
 
+install:  loader
+	cp loader /home/tom/bin/usb_loader
+
 clean:
 	rm -f loader

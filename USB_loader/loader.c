@@ -41,9 +41,10 @@ enum { NOHEADER, H32, H64 } header_type = NOHEADER;
 #define H64_SIZE	2048
 
 /* tjt: 100M !! heck of a big buffer. */
-#define BOOTLOADER_MAX_SIZE	100 * 1024 * 1024
+// #define BUF_SIZE	100 * 1024 * 1024
+#define BUF_SIZE	16 * 1024 * 1024
 
-uint8 buf[BOOTLOADER_MAX_SIZE];
+uint8 buf[BUF_SIZE];
 
 int load_size;
 unsigned int load_addr =   0xffff0000;
@@ -167,6 +168,18 @@ mk_header32 ( uint8 *buf )
 	write_long (buf + 0x1fc, 0x4849534e);
 }
 
+void
+fix_size ( void )
+{
+	write_long (buf + 0x44, load_size - 512);
+}
+
+void
+set_next_addr ( uint32 addr )
+{
+	write_long (buf + 0x40, addr );
+}
+
 #define ALIGN	16
 
 int
@@ -182,7 +195,7 @@ readBin ( uint8 *buf, const char *filepath )
 	    return -1;
 	}
 
-	size = (int)fread(buf, 1, BOOTLOADER_MAX_SIZE, fin);
+	size = (int)fread(buf, 1, BUF_SIZE, fin);
 	fclose(fin);
 
 	if (size <= 0) {
@@ -300,11 +313,13 @@ main(int argc, const char *argv[])
 {
 	int inject_header = 0;
 	int emit_file = 0;
+	int set_next = 0;
 
 	int offset;
 	int ret;
 	int file_size;
 	unsigned int val;
+	unsigned int next_addr = 0;
 
 	argc--;
 	argv++;
@@ -332,6 +347,12 @@ main(int argc, const char *argv[])
 		/* start address -sffff0800 */
                 val = strtol ( &argv[0][2], NULL, 16 );
                 launch_addr = val;
+	    }
+	    if ( argv[0][1] == 'a' ) {
+		/* sector offset -a129 not hex */
+                val = strtol ( &argv[0][2], NULL, 10 );
+		set_next = 1;
+                next_addr = val * 512;
 	    }
 
 	    argc--;
@@ -373,6 +394,12 @@ main(int argc, const char *argv[])
 
 	if ( header_type == H64 )
 	    mk_header64 ( buf );
+
+	/* For verbatim files */
+	fix_size ();
+
+	if ( set_next )
+	    set_next_addr ( next_addr );
 
 	if ( emit_file ) {
 	    fwrite ( buf, 1, load_size, stdout );
