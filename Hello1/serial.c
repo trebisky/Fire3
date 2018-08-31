@@ -1,12 +1,74 @@
-/*
- * Blink the on-board LED on a NanoPi Fire3
- *   Tom Trebisky  8-25-2018
- *
- * This blinks the on board LED on GPIO B12
- *  It works for the NanoPi M3 and Fire3 boards
+/* serial.c
+ * Simple driver for the s5p6818 console uart
+ * Tom Trebisky 8-31-2018
  */
 
 typedef volatile unsigned int vu32;
+
+void blink_init ( void );
+void blink_run ( void );
+
+/* The s5p6818 uart is described in chapter 25 of the user manual
+ *
+ * This is a start of my own driver, but it simply inherits
+ *  the initialization done by bl1.
+ *
+ */
+
+struct serial {
+	vu32	lcon;		/* 00 */
+	vu32	con;		/* 04 */
+	vu32	fcon;		/* 08 */
+	vu32	mcon;		/* 0c */
+	vu32	status;		/* 10 */
+	vu32	re_stat;	/* 14 */
+	vu32	fstat;		/* 18 */
+	vu32	mstat;		/* 1c */
+	vu32	txh;		/* 20 */
+	vu32	rxh;		/* 24 */
+	vu32	brdiv;		/* 28 */
+	vu32	fract;		/* 24 */
+
+	vu32	intp;		/* 30 */
+	vu32	ints;		/* 34 */
+	vu32	intm;		/* 38 */
+};
+
+struct serial *uart_base[] = {
+	(struct serial *) 0xC00a1000,
+	(struct serial *) 0xC00a0000,
+	(struct serial *) 0xC00a2000,
+	(struct serial *) 0xC00a3000,
+	(struct serial *) 0xC006d000,
+	(struct serial *) 0xC006f000
+};
+
+#define CONSOLE_BASE	(struct serial *) 0xC00a1000;
+
+#define	FIFO_FULL	0x01000000
+
+void
+serial_init ( void )
+{
+	// blink_init ();
+	// blink_run ();
+}
+
+void
+serial_putc ( int c )
+{
+	struct serial *up = CONSOLE_BASE;
+
+	if ( c == '\n' )
+	    serial_putc ( '\r' );
+
+	while ( up->fstat & FIFO_FULL )
+	    ;
+
+	up->txh = c;
+}
+
+/* ----------------------------------------- */
 
 struct gpio_regs {
 	vu32 out;	/* 00 */
@@ -83,31 +145,30 @@ get_el(void)
 }
 
 void
-boot_master (void)
+blink_init ( void )
 {
 	struct gpio_regs *gp = GPIOB_BASE;
-	int count;
 
 	/* Configure the GPIO */
 	gp->alt0 &= ~(3<<24);
 	gp->alt0 |= 2<<24;
 	gp->oe = LED_BIT;
 
-	count = get_el();
-
 	gp->out = LED_BIT;	/* off */
+}
+
+void
+blink_run (void)
+{
+	int count;
+
+	count = get_el();
 
 	for ( ;; ) {
 	    delay ( LONG );
 
 	    pulses ( count );
 	}
-}
-
-void
-//boot_slave ( int who )
-boot_slave ( void )
-{
 }
 
 /* THE END */
