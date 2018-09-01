@@ -2,12 +2,20 @@ Boot_NSIH
 
 This is part of understanding how the s5p6818 SoC on the NanoPi Fire3 boots.
 
+This is now mostly bogus and unexciting due to the discovery that
+all this is done more neatly by code in the bl1 loader,
+which we have sources for (see my Fire3-bl1 project).
+
 The most interesting thing here is probably nsih.txt,
 which is my annotated disassembly of nsih.bin.
 All the rest are tools that led to this.
 
-This is a research and reverse engineering project.
-It began with Github project "s5p6818_spl" by Metro94.
+Much more interesting is "nsih.bl1" which is pulled from
+the Fire3-bl1 sources (in startup_aarch64.S).
+
+This began as a research and reverse engineering project
+to understand some "black box" binary blobs that were
+distributed as part of a Github project "s5p6818_spl" by Metro94.
 
 He includes a "black box" binary called "tools/build"
 along with a 512 byte binary file "tools/nsih.bin"

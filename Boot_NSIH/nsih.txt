@@ -71,6 +71,16 @@ ffff0070:	e3402000 	movt	r2, #0
 ; See page 4-32 in the s5p6818 user manual.
 ; The ones fiddled with here are all labelled as "ARM configuration registers"
 
+; A note -- Study of the code from the startup file for the bl1 boot loader
+; indicates that the 0xc0011140 register is the one that matters.
+; That code does nothing with the 0xc0011144 register.
+; The value placed there is shifted left 2 bits and used for the start address
+; when things light up in 64 bit mode.  No idea why this whole gang
+; of registers get set like this.
+; That code sets the value 0x3fffc080, which becomes 0xffff0200, which is
+; perhaps what this code wanted.
+; This code gets 0xfff0800, which is 2048 bytes into the file !! ??
+
 ffff0074:	e5801140 	str	r1, [r0, #320]	; r1 --> 0xc0011140
 ffff0078:	e5802144 	str	r2, [r0, #324]	; r2 --> 0xc0011144
 ffff007c:	e5801148 	str	r1, [r0, #328]	; r1 --> 0xc0011148
@@ -105,8 +115,13 @@ ffff00d8:	e590117c 	ldr	r1, [r0, #380]	; 0x17c
 ffff00dc:	e3811a0f 	orr	r1, r1, #0xf000
 ffff00e0:	e580117c 	str	r1, [r0, #380]	; 0x17c
 
-; This is in the "clkpwr" block of the s5p6818
-; it may be an undocumented register.
+; This next register is in the "clkpwr" block of the s5p6818
+; It is the warm reset register.
+; See bl1 sources nx_clkpwr.h
+;
+; volatile U32 CPUWARMRESETREQ;  /// 0x2AC : CPU Warm Reset Request Register
+; #define PHY_BASEADDR_CLKPWR_MODULE                          0xC0010000
+; 
 
 ffff00e4:	e3000000 	movw	r0, #0		; r0 = 0xc0010000
 ffff00e8:	e34c0001 	movt	r0, #0xc001
@@ -120,6 +135,7 @@ ffff00f8:	e320f003 	wfi
 ; Any interrupts or exceptions come here.
 ;
 ; The end result is to turn out the on-board LED on GPIO B12.
+; then spin
 
 ffff00fc:	e30b0000 	movw	r0, #0xb000	; r0 = 0xc001b000 (GPIO B)
 ffff0100:	e34c0001 	movt	r0, #0xc001

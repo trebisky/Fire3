@@ -10,7 +10,7 @@ nsih.odx:  nsih.bin
 	odx nsih.bin >nsih.odx
 
 nsih.elf:  nsih.bin
-	./arm_wrap -bffff0000 nsih.bin nsih.elf
+	arm_wrap -bffff0000 nsih.bin nsih.elf
 
 # objdump will suppress zones with zero bytes, displaying
 # simply "..." (3 dots) for any number of zeros.

@@ -29,14 +29,14 @@ get_sctlr(void)
 {
         unsigned int val;
 
-	asm volatile("mrs %0, sctlr_el3" : "=r" (val) : : "cc");
+	asm volatile("mrs %0, sctlr_el2" : "=r" (val) : : "cc");
         return val;
 }
 
 static inline void
 set_sctlr ( unsigned int val )
 {
-	asm volatile("msr sctlr_el3, %0" : : "r" (val) : "cc");
+	asm volatile("msr sctlr_el2, %0" : : "r" (val) : "cc");
 	asm volatile("isb");
 }
 
@@ -47,7 +47,7 @@ get_spsr(void)
 {
         unsigned int val;
 
-	asm volatile("mrs %0, spsr_el3" : "=r" (val) : : "cc");
+	asm volatile("mrs %0, spsr_el2" : "=r" (val) : : "cc");
         return val;
 }
 #endif
