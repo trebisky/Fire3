@@ -203,9 +203,13 @@ readBin ( uint8 *buf, const char *filepath )
 	    return -1;
 	}
 
+	// fprintf ( stderr, "Raw file size: %d\n", size );
+
 	// Size must be aligned by 16 bytes
 	if (size % ALIGN != 0)
 	    size = ((size / ALIGN) + 1) * ALIGN;
+
+	// fprintf ( stderr, "Padded file size: %d\n", size );
 
 	return size;
 }

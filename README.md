@@ -12,6 +12,7 @@ This board is based on the Samsung s5p6818 chip.
 1. Boot_NSIH - disassemble a header that jumps from A32 to A64
 1. Bootrom - disassemble the s5p6818 on-chip boot loader
 1. Hello1 - simple serial IO, loaded by bl1.
+1. Mini - tiny stub code to debug USB mode of the bl1 bootloader.
 1. USB_loader - host side (linux) tool to download code via USB.
 
 For notes and supporting information, see my website:

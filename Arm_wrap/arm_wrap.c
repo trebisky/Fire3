@@ -17,6 +17,9 @@
  * header right, the best thing is to get a compiler generated
  * and correct ELF object file, dump the first 52 bytes, and
  * use it as a guide (and compare against the output of this program).
+ *
+ * Also note that most linux systems have a utility "readelf" that
+ *  can be helpful.
  */
 
 /* ntohs() and such */
@@ -45,6 +48,7 @@
 #define EM_68K		4
 #define EM_ARM		40
 #define EM_XTENSA	94
+#define EM_AARCH64	183	/* more than we bargained for !! */
 
 #define ELF_LITTLE_ENDIAN	1
 #define ELF_BIG_ENDIAN		2
@@ -52,6 +56,12 @@
 /* XXX - Change this for different hardware */
 #define ELF_MACHINE	EM_ARM
 #define ELF_ENDIAN	ELF_LITTLE_ENDIAN
+
+#define CLASS_32	1
+#define CLASS_64	2
+
+int machine_type = EM_ARM;
+int class = CLASS_32;
 
 #define PGSIZE 8192	/* 0x2000 */
 
@@ -180,14 +190,10 @@ int main ( int argc, char **argv )
 	int nsy;
 	unsigned long val;
 
-	if ( argc < 2 ) {
-	    use ();
-	}
-
 	argv++;
 	argc--;
 
-	while ( argv[0][0] == '-' ) {
+	while ( argc && argv[0][0] == '-' ) {
 	    if ( argv[0][1] == 'b' ) {
 		val = strtol ( &argv[0][2], NULL, 16 );
 		printf ( "Set base: %08x\n", val );
@@ -196,11 +202,21 @@ int main ( int argc, char **argv )
 		val = strtol ( &argv[0][2], NULL, 16 );
 		printf ( "Set entry: %08x\n", val );
 		entry = val;
+	    } else if ( strcmp ( "64", &argv[0][1] ) == 0 ) {
+		printf ( "ARM 64 bit (aarch64) selected\n" );
+		machine_type = EM_AARCH64;
+		class = CLASS_64;
+		printf ( "Sorry, 64 bit not ready yet\n" );
+		exit ( 1 );
 	    } else {
 		// fprintf ( stderr, "Skipping: %s\n", argv[0] );
 	    }
 	    argv++;
 	    argc--;
+	}
+
+	if ( argc < 2 ) {
+	    use ();
 	}
 
 	/* Extra argument is symbol file */
@@ -271,7 +287,7 @@ int main ( int argc, char **argv )
 	hdr.e_ident[0] = 0x7F;
 	/* note there are 16 bytes in the ident array */
 
-	hdr.e_ident[4] = 1;	/* 32 bit addresses */
+	hdr.e_ident[4] = class;	/* 32 or 64 bit addresses */
 	hdr.e_ident[5] = ELF_ENDIAN;
 	hdr.e_ident[6] = 1;	/* elf version 1 */
 	hdr.e_ident[7] = 0;	/* target OS - System V */
@@ -288,7 +304,7 @@ int main ( int argc, char **argv )
 
 	hdr.e_type = swap_short(2);
 
-	hdr.e_machine = swap_short(ELF_MACHINE);
+	hdr.e_machine = swap_short(machine_type);
 
 	hdr.e_version = swap_long(1);
 	hdr.e_entry = swap_long ( entry );
