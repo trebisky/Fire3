@@ -11,9 +11,6 @@ NAME =
 # added by tjt  9-2-2018
 CROSS_COMPILE = aarch64-linux-gnu-
 
-sdcard:
-	dd if=u-boot.bin of=/dev/sdf bs=512 seek=129 conv=fdatasync
-
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
 # More info can be located in ./README
@@ -834,6 +831,14 @@ ifeq ($(CONFIG_DM_I2C_COMPAT),y)
 	@echo "before sending patches to the mailing list."
 	@echo "===================================================="
 endif
+
+# tjt additions ---
+update:
+	cp u-boot.bin ../SDcard
+
+sdcard:
+	dd if=u-boot.bin of=/dev/sdf bs=512 seek=129 conv=fdatasync
+
 
 PHONY += dtbs
 dtbs dts/dt.dtb: checkdtc u-boot
