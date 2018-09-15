@@ -1,0 +1,180 @@
+/*
+ * (C) Copyright 2016 Nexell
+ * Youngbok, Park <park@nexell.co.kr>
+ *
+ * SPDX-License-Identifier:      GPL-2.0+
+ */
+
+#include "skeleton.dtsi"
+/ {
+	#include "s5p6818-pinctrl.dtsi"
+
+	aliases {
+		mmc0 = "/mmc0:mmc@c0062000";
+		mmc1 = "/mmc1@c0068000";
+		mmc2 = "/mmc2@c0069000";
+		gmac = "/ethernet@c0060000";
+	};
+
+	mmc2:mmc@c0069000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-dwmmc";
+		reg = <0xc0069000 0x1000>;
+		nexell,bus-width = <8>;
+		index = <2>;
+		status = "disabled";
+	};
+
+	mmc1:mmc@c0068000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-dwmmc";
+		reg = <0xc0068000 0x1000>;
+		nexell,bus-width = <4>;
+		index = <1>;
+		status = "disabled";
+	};
+
+	mmc0:mmc@c0062000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-dwmmc";
+		reg = <0xc0062000 0x1000>;
+		nexell,bus-width = <4>;
+		index = <0>;
+		status = "disabled";
+	};
+
+	gmac:ethernet@c0060000 {
+		compatible = "nexell,nexell-gmac";
+		reg = <0xc0060000 0x8000>;
+		phy-mode = "rgmii";
+		pinctrl-names = "default";
+		pinctrl-0 = <&gmac_txd>, <&gmac_rxd>, <&gmac_txen>,
+			<&gmac_mdc>, <&gmac_mdio>, <&gmac_rxclk>, <&gmac_txclk>;
+		status = "disabled";
+	};
+
+	i2c0:i2c@c00a4000 {
+		compatible = "nexell,s5pxx18-i2c";
+		reg = <0xC00A4000 0x1000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		status = "disabled";
+	};
+
+	i2c1:i2c@c00a5000 {
+		compatible = "nexell,s5pxx18-i2c";
+		reg = <0xC00A5000 0x1000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		status = "disabled";
+	};
+
+	i2c2:i2c@c00a6000 {
+		compatible = "nexell,s5pxx18-i2c";
+		reg = <0xC00A6000 0x1000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		status = "disabled";
+	};
+
+	dp0:dp@c0102800 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-display";
+		reg = <0xc0102800 0x100>;
+		index = <0>;
+		status = "disabled";
+	};
+
+	dp1:dp@c0102c00 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-display";
+		reg = <0xc0102c00 0x100>;
+		index = <1>;
+		status = "disabled";
+	};
+
+	ehci:usbhost@c0030000 {
+		compatible = "nexell,nexell-ehci";
+		reg = <0xC0030000 0x10000>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		status = "disabled";
+		phy {
+			compatible = "samsung,exynos-usb-phy";
+			reg = <0 0xC0011000>;
+		};
+	};
+
+	dwc2otg@c0040000 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "nexell,dwc2";
+		reg = <0xC0011000 0x100>, <0xC0040000 0x11000>;
+		status = "disabled";
+	};
+
+	gpio_a:gpio@c001a000 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc001a000 0x00000010>;
+		altr,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_a";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	gpio_b:gpio@c001b000 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc001b000 0x00000010>;
+		altr,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_b";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	gpio_c:gpio@c001c000 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc001c000 0x00000010>;
+		nexell,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_c";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	gpio_d:gpio@c001d000 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc001d000 0x00000010>;
+		nexell,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_d";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	gpio_e:gpio@c001e000 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc001e000 0x00000010>;
+		nexell,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_e";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	gpio_alv:gpio@c0010800 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc0010800 0x00000010>;
+		nexell,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_alv";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	pinctrl@C0010000 {
+		compatible = "nexell,s5pxx18-pinctrl";
+		reg = <0xc0010000 0xf000>;
+		u-boot,dm-pre-reloc;
+	};
+};

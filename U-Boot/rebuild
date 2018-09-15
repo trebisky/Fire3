@@ -1,0 +1,4 @@
+#!/bin/sh
+make distclean
+make artik710_raptor_defconfig
+make

@@ -1,0 +1,9 @@
+/*
+ * (C) Copyright 2016 Nexell
+ * Hyunseok, Jung <hsjung@nexell.co.kr>
+ *
+ * SPDX-License-Identifier:      GPL-2.0+
+ */
+
+/dts-v1/;
+#include "s5p4418-artik530-raptor-common.dtsi"

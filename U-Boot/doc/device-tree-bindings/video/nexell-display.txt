@@ -1,0 +1,148 @@
+* Nexell Display Controller
+
+Required properties:
+
+ 	- compatible : Should be "nexell,nexell-display"
+ 	- module : display out module index(0 or 1)
+ 	- lcd-type : support display type "rgb", "lvds", "mipi", "hdmi"
+
+Required subnode 'dp-sync' is as follows: LCD's sync parameters
+
+	properties:
+	- h_active_len: horizontal active size
+	- h_sync_width: horizontal sync width
+	- h_back_porch: horizontal back porch
+	- h_front_porch: horizontal front porch
+	- h_sync_invert: horizontal active sync invert
+
+	- v_active_len: vertical active size
+	- v_sync_width: vertical sync width
+	- v_back_porch: vertical back porch
+	- v_front_porch: vertical front porch
+	- v_sync_invert: vertical active sync invert
+
+Required subnode 'dp-ctrl' is as follows: Display port control parameters
+
+	optional properties:
+	- clk_src_lv0: select display clock source of clock generator '0'
+				   0:PLL0, 1:PLL1, 2:SVLCK, 3:P(S)VCLK, 4:~P(S)VCLK, 5:AVCLK
+				   6:~SVLCK, 7:ClKGEN0's Output( Only use Clock generator1 )
+	- clk_div_lv0: set display clock divisor of specified clock generator '0'
+				   (1 ~ 256)
+	- clk_src_lv1: select display clock source of clock generator '1'
+				   0:PLL0, 1:PLL1, 2:SVLCK, 3:P(S)VCLK, 4:~P(S)VCLK, 5:AVCLK
+				   6:~SVLCK, 7:ClKGEN0's Output( Only use Clock generator1 )
+	- clk_div_lv1: set clock display divisor of specified clock generator '1'
+				   (1 ~ 256)
+	- interlace: display scan mode, 0=progressive, 1=interlace
+	- out_format: specifies display out data format
+	- invert_field: pecifies internal field polarity
+				   0: normal field(low is odd), 1: invert field(low is even)
+	- swap_RB: swap red and blue component for rgb output
+	- yc_order: output order for YCbCr Output
+	- delay_mask: to adjust delay (rgb_pvd, hsync_cp1, vsync_fram, de_cp2)
+				  if 0, set defalut delays
+	- d_rgb_pvd: the delay value for RGB/PVD signal
+	- d_hsync_cp1: the delay value for HSYNC/CP1 signal
+	- d_vsync_fram: the delay value for VSYNC/FRAM signal
+	- d_de_cp2: the delay value for DE/CP2 signal
+	- vs_start_offset: start veritcal sync offset
+	- vs_end_offset: end veritcla sync offset
+	- ev_start_offset: start even veritcal sync offset
+	- ev_end_offset: end even veritcal sync offset
+	- vck_select: specifies the pixel clock polarity
+
+Required subnode 'dp-planes' is as follows:
+	'top' subnode :
+	optional properties:
+ 	- screen_width: top layer's screen width
+ 	- screen_height: top layer's screen height
+ 	- back_color: top layer's background color
+ 	- video_prior: top layer's video priority
+			       0: video > RGB.., 1: RGB0 > video.., 2: RGB0 > RGB1 > video
+
+	'layer_0 or layer_1' subnode : multi layer control parameters
+	optional properties:
+ 	- fb_base: frame buffer address
+ 	- left: the x-coordinate of the upper-left corner
+ 	- top: the y-coordinate of the upper-top corner
+ 	- width: the x resolution
+ 	- height: the y resolution
+ 	- pixel_byte: number of byte per pixel
+ 	- format: the mlc(multi layer control's memory format)
+
+Required subnode 'dp-device' is as follows:
+
+	subnode 'rgb' is as follows (rgb lcd panel):
+	optional properties:
+	- lcd_mpu_type: support mpu type RGB LCD
+
+	subnode 'mipi' is as follows (mipi lcd panel):
+	optional properties:
+	- hs_bitrate: mipi high speed bitrate (1000, ... Mhz) to mipi data
+	- lp_bitrate: mipi low power bitrate (150, 100, 80 Mhz) to setup data
+
+	subnode 'hdmi' is as follows (hdmi output):
+	optional properties:
+	- preset: hdmi resolution 0: 1280 x 720, 1: 1920 x 1080
+
+	subnode 'lvds' is as follows (lvds output):
+	optional properties:
+	- format: lvds format 0: VESA format, 1: JEDIA foramt, 2: user location
+
+
+Example:
+	dp0:dp@c0102800 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-display";
+		reg = <0xc0102800 0x100>;
+		index = <0>;
+	};
+
+	dp1:dp@c0102c00 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-display";
+		reg = <0xc0102c00 0x100>;
+		index = <1>;
+	};
+
+    dp0:dp@c0102800 {
+		status = "okay";
+		module = <0>;
+		dp-sync {
+			h_active_len = <800>;
+			h_sync_width = <8>;
+			h_back_porch = <40>;
+			h_front_porch = <16>;
+			h_sync_invert = <1>;
+			v_active_len = <1280>;
+			v_sync_width = <1>;
+			v_back_porch = <2>;
+			v_front_porch = <4>;
+			v_sync_invert = <1>;
+		};
+		dp-ctrl {
+			clk_src_lv0  = <0>;
+			clk_div_lv0	= <16>;
+			clk_src_lv1	= <7>;
+			clk_div_lv1	= <1>;
+		};
+		dp-planes {
+			layer_top {
+				screen_width = <800>;
+				screen_height = <1280>;
+				back_color = <0x000000>;
+				video_prior = <2>;
+			};
+			layer_0 {
+				fb_base = <0x41000000>;
+				left = <0>;
+				top = <0>;
+				width = <800>;
+				height = <1280>;
+				pixel_byte = <4>;
+				format = <0x06530000>;
+			};
+		};

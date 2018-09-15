@@ -1,0 +1,148 @@
+/*
+ * (C) Copyright 2016 Nexell
+ * Hyunseok, Jung <hsjung@nexell.co.kr>
+ *
+ * SPDX-License-Identifier:      GPL-2.0+
+ */
+
+#include "s5p4418-artik530.dtsi"
+
+/ {
+	model = "Samsung artik530 raptor board based on Nexell s5p4418";
+	cpu-model = "S5p4418";
+
+	compatible = "samsung,artik530-raptor", "samsung,artik530",
+		   "nexell,s5p4418";
+
+	mmc0:mmc@c0062000 {
+		frequency = <50000000>;
+		nexell,drive_dly = <0x0>;
+		nexell,drive_shift = <0x03>;
+		nexell,sample_dly = <0x00>;
+		nexell,sample_shift = <0x02>;
+		status = "okay";
+	};
+
+	nxe1500_i2c:i2c@1 {
+		compatible = "i2c-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&gpio_c 16 0>,	/* SDA */
+		      <&gpio_c 15 0>;	/* SCL */
+		i2c-gpio,delay-us = <3>;
+		status ="okay";
+
+		nxe1500@33 {
+			compatible = "nexell,nxe1500";
+			reg = <0x33>;
+
+			voltage-regulators {
+				dcdc0: BUCK0 {
+					regulator-name = "dcdc1";
+					regulator-min-microvolt = <600000>;
+					regulator-max-microvolt = <3500000>;
+					regulator-always-on = <1>;
+					regulator-boot-on = <1>;
+				};
+
+				dcdc1: BUCK1 {
+					regulator-name = "dcdc2";
+					regulator-min-microvolt = <600000>;
+					regulator-max-microvolt = <3500000>;
+					regulator-always-on = <1>;
+					regulator-boot-on = <1>;
+				};
+
+				dcdc2: BUCK2 {
+					regulator-name = "dcdc3";
+					regulator-min-microvolt = <600000>;
+					regulator-max-microvolt = <3500000>;
+					regulator-always-on = <1>;
+					regulator-boot-on = <1>;
+				};
+
+				dcdc3: BUCK3 {
+					regulator-name = "dcdc4";
+					regulator-min-microvolt = <600000>;
+					regulator-max-microvolt = <3500000>;
+					regulator-always-on = <1>;
+					regulator-boot-on = <1>;
+				};
+
+				ldo0: LDO0 {
+					regulator-min-microvolt = <900000>;
+					regulator-max-microvolt = <3500000>;
+					regulator-name = "ldo1";
+				};
+
+				ldo1: LDO1 {
+					regulator-min-microvolt = <900000>;
+					regulator-max-microvolt = <3500000>;
+					regulator-name = "ldo2";
+				};
+
+				ldo2: LDO2 {
+					regulator-min-microvolt = <600000>;
+					regulator-max-microvolt = <3500000>;
+					regulator-name = "ldo3";
+				};
+
+				ldo3: LDO3 {
+					regulator-min-microvolt = <900000>;
+					regulator-max-microvolt = <3500000>;
+					regulator-name = "ldo4";
+				};
+
+				ldo4: LDO4 {
+					regulator-min-microvolt = <900000>;
+					regulator-max-microvolt = <3500000>;
+					regulator-name = "ldo5";
+				};
+
+				ldortc1: LDO10 {
+					regulator-min-microvolt = <1200000>;
+					regulator-max-microvolt = <3500000>;
+					regulator-name = "ldortc1";
+					regulator-always-on = <1>;
+					regulator-boot-on = <1>;
+				};
+
+				ldortc2: LDO11 {
+					regulator-min-microvolt = <900000>;
+					regulator-max-microvolt = <3500000>;
+					regulator-name = "ldortc2";
+					regulator-always-on = <1>;
+					regulator-boot-on = <1>;
+				};
+			}; /* voltage-regulators */
+		}; /* nxe1500@32 */
+	}; /* nxe1500_i2c */
+
+	sensorid:i2c_gpio@2 {
+		compatible = "i2c-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&gpio_b 18 1>,
+			<&gpio_b 11 1>;
+		i2c-gpio,delay-us = <12>;
+		sensor_id@36 {
+			compatible = "samsung,artik_sensorid";
+			reg = <0x36>;
+		};
+	};
+
+	gmac:ethernet@c0060000 {
+		mac-address = [000000000000]; /* Filled in by U-Boot */
+		status = "okay";
+	};
+
+	ehci:usbhost@c0030000 {
+		samsung,vbus-gpio = <&gpio_a 16 0>;
+		status = "okay";
+	};
+
+	dwc2otg@c0040000 {
+		status = "okay";
+	};
+
+};

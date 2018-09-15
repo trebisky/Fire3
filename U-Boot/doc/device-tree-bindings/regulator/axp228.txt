@@ -1,0 +1,54 @@
+X-Powers, AXP228 regulators
+
+This device uses two drivers:
+- drivers/power/pmic/axp228.c (as parent I/O device)
+- drivers/power/regulator/axp228.c (for child regulators)
+
+This file describes the binding info for the REGULATOR driver.
+
+First, please read the binding info for the pmic:
+- doc/device-tree-bindings/pmic/axp228.txt
+
+Required subnode:
+- voltage-regulators: required for the PMIC driver
+
+Required properties:
+- regulator-name: used for regulator uclass platform data '.name'
+
+Optional:
+- regulator-min-microvolt: minimum allowed Voltage to set
+- regulator-max-microvolt: minimum allowed Voltage to set
+- regulator-always-on: regulator should be never disabled
+- regulator-boot-on: regulator should be enabled by the bootloader
+
+Example:
+(subnode of axp228 pmic node)
+	voltage-regulators {
+		dcdc1: BUCK1 {
+			regulator-min-microvolt = <1600000>;
+			regulator-max-microvolt = <3400000>;
+			regulator-name = "dcdc1";
+		};
+		.
+		.
+		.
+		dcdc5: BUCK5 {
+			regulator-min-microvolt = <1000000>;
+			regulator-max-microvolt = <2550000>;
+			regulator-name = "dcdc5";
+		};
+
+		aldo1: LDO1 {
+			regulator-min-microvolt = <700000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-name = "aldo1";
+		};
+		.
+		.
+		.
+		dc5ldo: LDO11 {
+			regulator-min-microvolt = <700000>;
+			regulator-max-microvolt = <1400000>;
+			regulator-name = "dc5ldo";
+		};
+	};

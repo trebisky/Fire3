@@ -1,0 +1,6 @@
+ARTIK710_RAPTOR BOARD
+M:  hsjung <hsjung@nexell.co.kr>
+S:  Maintained
+F:  board/nexell/s5p6818/artik710_raptor/
+F:  include/configs/artik710_raptor.h
+F:  configs/artik710_raptor_defconfig

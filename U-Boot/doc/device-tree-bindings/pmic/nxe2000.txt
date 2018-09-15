@@ -1,0 +1,38 @@
+NEXELL, NXE2000 pmic
+
+This device uses two drivers:
+- drivers/power/pmic/nxe2000.c (for parent device)
+- drivers/power/regulator/nxe2000.c (for child regulators)
+
+This file describes the binding info for the PMIC driver.
+
+To bind the regulators, please read the additional binding info:
+- doc/device-tree-bindings/regulator/nxe2000.txt
+
+Required properties:
+- compatible: "nexell,nxe2000"
+- reg = 0x34
+
+With those two properties, the pmic device can be used for read/write only.
+To bind each regulator, the optional regulators subnode should exists.
+
+Optional subnode:
+- voltage-regulators: subnode list of each device's regulator
+  (see nxe2000.txt - regulator binding info)
+
+Example:
+
+	nxe2000 {
+		compatible = "nexell,nxe2000";
+
+		voltage-regulators {
+			dcdc1: BUCK1 {
+				...
+			};
+			...
+			ldo1: LDO1 {
+				...
+			};
+			...
+		};
+	};

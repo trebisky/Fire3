@@ -1,0 +1,38 @@
+X-Powers, AXP228 pmic
+
+This device uses two drivers:
+- drivers/power/pmic/axp228.c (for parent device)
+- drivers/power/regulator/axp228.c (for child regulators)
+
+This file describes the binding info for the PMIC driver.
+
+To bind the regulators, please read the additional binding info:
+- doc/device-tree-bindings/regulator/axp228.txt
+
+Required properties:
+- compatible: "x-powers,axp228"
+- reg = 0x34
+
+With those two properties, the pmic device can be used for read/write only.
+To bind each regulator, the optional regulators subnode should exists.
+
+Optional subnode:
+- voltage-regulators: subnode list of each device's regulator
+  (see axp228.txt - regulator binding info)
+
+Example:
+
+	axp228 {
+		compatible = "x-powers,axp228";
+
+		voltage-regulators {
+			dcdc1: BUCK1 {
+				...
+			};
+			...
+			ldo1: LDO1 {
+				...
+			};
+			...
+		};
+	};

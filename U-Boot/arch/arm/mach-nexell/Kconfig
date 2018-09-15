@@ -1,0 +1,45 @@
+if ARCH_NEXELL
+
+config NEXELL_COMMON
+	bool "Nexell common options"
+
+config NEXELL_ARMV7_COMMON
+	bool "Nexell 32-bit common options"
+	select CPU_V7
+	select NEXELL_COMMON
+
+config NEXELL_ARMV8_COMMON
+	bool "Nexell 64-bit common options"
+	select ARM64
+	select ARMV8_MULTIENTRY
+	select NEXELL_COMMON
+
+choice
+	prompt "Nexell SoC select"
+	optional
+
+config ARCH_S5P4418
+	bool "Nexell S5P4418 family"
+	select NEXELL_ARMV7_COMMON
+
+config ARCH_S5P6818
+	bool "Nexell S5P6818 family"
+	select NEXELL_ARMV8_COMMON
+endchoice
+
+if ARCH_S5P4418
+menu "Board for S5P4418"
+source "board/nexell/s5p4418/Kconfig"
+endmenu
+endif
+
+if ARCH_S5P6818
+menu "Board for S5P6818"
+source "board/nexell/s5p6818/Kconfig"
+endmenu
+endif
+
+config SYS_SOC
+	default "nexell"
+
+endif

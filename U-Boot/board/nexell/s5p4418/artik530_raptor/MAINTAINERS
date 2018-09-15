@@ -1,0 +1,6 @@
+ARTIK530_RAPTOR BOARD
+M:  hsjung <hsjung@nexell.co.kr>
+S:  Maintained
+F:  board/s5p4418/artik530_raptor/
+F:  include/configs/artik530_raptor.h
+F:  configs/artik530_raptor_defconfig

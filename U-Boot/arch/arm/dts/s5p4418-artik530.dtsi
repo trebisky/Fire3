@@ -1,0 +1,19 @@
+/*
+ * (C) Copyright 2016 Nexell
+ * Hyunseok, Jung <hsjung@nexell.co.kr>
+ *
+ * SPDX-License-Identifier:      GPL-2.0+
+ */
+
+#include "s5p4418.dtsi"
+
+/ {
+	mmc2:mmc@c0069000 {
+		nexell,drive_dly = <0x0>;
+		nexell,drive_shift = <0x03>;
+		nexell,sample_dly = <0x00>;
+		nexell,sample_shift = <0x02>;
+		frequency = <50000000>;
+		status = "okay";
+	};
+};

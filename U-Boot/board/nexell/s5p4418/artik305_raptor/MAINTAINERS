@@ -1,0 +1,6 @@
+ARTIK305_RAPTOR BOARD
+M:  Jaewon Kim <jaewon02.kim@samsung.com>
+S:  Maintained
+F:  board/nexell/s5p4418/artik305_raptor/
+F:  include/configs/artik305_raptor.h
+F:  configs/artik305_raptor_defconfig

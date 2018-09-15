@@ -1,0 +1,6 @@
+config ARTIK_OTA
+	bool "ARTIK Update feature"
+	help
+	  This feature provides OTA(Over-The-Air) function.
+	  It updates kernel & modules partition without
+	  the need of physical access.

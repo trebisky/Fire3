@@ -1,0 +1,40 @@
+Nexell GPIO Controller
+
+Required properties:
+- compatible: Compatible property value should be "nexell,nexell-gpio>".
+
+- reg: Physical base address of the controller and length of memory mapped
+  region.
+
+- #gpio-cells: Should be 2. The syntax of the gpio specifier used by client nodes
+  should be the following with values derived from the SoC user manual.
+
+- gpio-controller: Specifies that the node is a gpio controller.
+
+Optional properties:
+- nexell,gpio-bank-width: Width of the GPIO bank. This defines how many pins
+  the GPIO device has. Ranges between 1-32. Optional and deffaults to 32 if not
+  specified.
+- gpio-bank-name: bank name attached to this device. however, banks should use
+  the name of the Alive GPIO to gpio_alv.
+
+Example:
+	gpio_a:gpio@c001a000 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc001a000 0x00000010>;
+		nexell,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_a";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+Alive GPIO Example:
+	gpio_alv:gpio@c0010800 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc0010800 0x00000010>;
+		nexell,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_alv";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+

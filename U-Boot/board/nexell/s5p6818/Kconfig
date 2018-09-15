@@ -1,0 +1,29 @@
+choice
+	prompt "Board select"
+
+config TARGET_S5P6818_DRONE
+	bool "S5P6818_DRONE"
+	help
+	  Support for s5p6818 drone platform.
+
+config TARGET_ARTIK710_RAPTOR
+	bool "ARTIK710_RAPTOR"
+	help
+	  Support for artik710_raptor platform.
+
+endchoice
+
+config SYS_VENDOR
+	default "nexell"
+
+config SYS_BOARD
+	default "s5p6818"
+
+config SYS_CONFIG_NAME
+	string "Board header file"
+	help
+	  This option should contain the base name of board header file.
+	  The header file include/configs/<CONFIG_SYS_CONFIG_NAME>.h
+	  should be included from include/config.h.
+
+source "board/nexell/common/Kconfig"

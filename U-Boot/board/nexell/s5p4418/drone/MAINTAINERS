@@ -1,0 +1,6 @@
+S5P4418 DRONE BOARD
+M:  hsjung <hsjung@nexell.co.kr>
+S:  Maintained
+F:  board/s5p4418/drone/
+F:  include/configs/s5p4418_drone.h
+F:  configs/s5p4418_drone_defconfig

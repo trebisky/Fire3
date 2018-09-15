@@ -1,0 +1,54 @@
+NEXELL, NXE2000 regulators
+
+This device uses two drivers:
+- drivers/power/pmic/nxe2000.c (as parent I/O device)
+- drivers/power/regulator/nxe2000.c (for child regulators)
+
+This file describes the binding info for the REGULATOR driver.
+
+First, please read the binding info for the pmic:
+- doc/device-tree-bindings/pmic/nxe2000.txt
+
+Required subnode:
+- voltage-regulators: required for the PMIC driver
+
+Required properties:
+- regulator-name: used for regulator uclass platform data '.name'
+
+Optional:
+- regulator-min-microvolt: minimum allowed Voltage to set
+- regulator-max-microvolt: minimum allowed Voltage to set
+- regulator-always-on: regulator should be never disabled
+- regulator-boot-on: regulator should be enabled by the bootloader
+
+Example:
+(subnode of nxe2000 pmic node)
+	voltage-regulators {
+		dcdc1: BUCK1 {
+			regulator-min-microvolt = <600000>;
+			regulator-max-microvolt = <3500000>;
+			regulator-name = "dcdc1";
+		};
+		.
+		.
+		.
+		dcdc5: BUCK5 {
+			regulator-min-microvolt = <600000>;
+			regulator-max-microvolt = <3500000>;
+			regulator-name = "dcdc5";
+		};
+
+		ldo1: LDO1 {
+			regulator-min-microvolt = <900000>;
+			regulator-max-microvolt = <3500000>;
+			regulator-name = "ldo1";
+		};
+		.
+		.
+		.
+		ldortc2: LDO12 {
+			regulator-min-microvolt = <1700000>;
+			regulator-max-microvolt = <3500000>;
+			regulator-name = "ldortc2";
+		};
+	};

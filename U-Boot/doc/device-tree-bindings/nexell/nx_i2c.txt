@@ -1,0 +1,22 @@
+* Nexell S5Pxx18 I2C Controller
+
+Driver:
+- drivers/i2c/nx_i2c.c
+
+Software i2c device-tree node properties:
+Required:
+* #address-cells = <1>;
+* #size-cells = <0>;
+* compatible = "nexell,s5pxx18-i2c";
+* status = "disabled";
+
+Example:
+
+&i2c_1 {
+	status = "okay"
+	gsl680@1c {
+		compatible = "nexell,gslX680";
+		reg = <0x40>;
+		...
+	};
+};

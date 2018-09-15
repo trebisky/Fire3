@@ -1,0 +1,55 @@
+* Nexell DWC_mobile_storage
+
+The Nexell provides DWC_mobile_storage interface which supports
+. Embedded Multimedia Cards (EMMC-version 4.5)
+. Secure Digital memory (SD mem-version 3.0)
+. Secure Digital I/O (SDIO-version 3.0)
+
+The Nexell DWC_mobile_storage provides 3 channels.
+SOC specific and Board specific properties are channel specific.
+
+Required SoC Specific Properties:
+
+- compatible: should be
+	- nexel,exynos-dwmmc: for exynos platforms
+
+- reg: physical base address of the controller and length of memory mapped
+	region.
+- index: physical chanell index.
+
+Required Board Specific Properties:
+
+- #address-cells: should be 1.
+- #size-cells: should be 0.
+- nexel,bus-width: The width of the bus used to interface the devices
+	supported by DWC_mobile_storage (SD-MMC/EMMC/SDIO).
+	. Typically the bus width is 4 or 8.
+	. 8bit width support only ch2.
+- nexell,drive_dly: Output drive clock delay. range is 0 ~ 255.
+- nexell,drive_shift: Output drive clock phase shift. range is 0 ~ 3
+- nexell,sample_dly: Read sample clock delay. range is 0 ~ 255.
+- nexell,sample_shift: Read sample clock phase shitf. range is 0 ~ 255.
+-frequency: sd,mmc clock frequency, typically 50MHz
+- nexell,ddr: uset ddr transfer mode, support only ch2, 8bit bus width.
+Example:
+
+mmc0:mmc@c0062000 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	compatible = "nexell,nexell-dwmmc";
+	reg = <0xc0062000 0x1000>;
+	nexell,bus-width = <4>;
+	index = <0>;
+	status = "disabled";
+};
+
+
+mmc0:mmc@c0062000 {
+	frequency = <50000000>;
+	nexell,drive_dly = <0x0>;
+	exell,drive_shift = <0x03>;
+	nexell,sample_dly = <0x00>;
+	nexell,sample_shift = <0x02>;
+	status = "okay";
+};
+
