@@ -61,6 +61,9 @@ usb:  hello.bin
 sdcard:  hello.bin
 	dd if=hello.bin of=/dev/sdf seek=129 conv=fdatasync
 
+install:	hello.bin
+	cp hello.bin /var/lib/tftpboot/fire3.bin
+
 .PHONY: clean
 clean:
 	rm -f *.o

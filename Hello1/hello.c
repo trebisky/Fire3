@@ -97,12 +97,19 @@ main ( void )
 	printf ( "Done with 0x%08x\n", p );
 	printf ( "\n" );
 
+#define BAD_ALIGN
+#ifdef BAD_ALIGN
+/* This will cause a fault due to ARM alignment issues. */
 	p = (unsigned int *) &buf[2];
 	printf ( "Read from 0x%08x\n", p );
 	val = *p;
 	printf ( "Value = 0x%08x\n", val );
 	printf ( "Done with 0x%08x\n", p );
 	printf ( "Finished\n" );
+#endif
+
+	printf ( "Goodbye world\n" );
+	/* return to the boot loader */
 }
 
 /* THE END */
