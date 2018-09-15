@@ -12,7 +12,6 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifndef CONFIG_SYS_DCACHE_OFF
-#ifdef notdef
 inline void set_pgtable_section(u64 *page_table, u64 index, u64 section,
 			 u64 memory_type, u64 attribute)
 {
@@ -23,8 +22,8 @@ inline void set_pgtable_section(u64 *page_table, u64 index, u64 section,
 	value |= attribute;
 	page_table[index] = value;
 }
-#endif
 
+#ifdef notdef
 static void set_pgtable_section_tjt (u64 *page_table, u64 index, u64 section,
 			 u64 memory_type, u64 attribute, int debug)
 {
@@ -38,6 +37,7 @@ static void set_pgtable_section_tjt (u64 *page_table, u64 index, u64 section,
 	    printf ( "PG table %lld = %08llx\n", index, value );
 
 }
+#endif
 
 inline void set_pgtable_table(u64 *page_table, u64 index, u64 *table_addr)
 {
@@ -54,24 +54,24 @@ __weak void mmu_setup(void)
 	u64 *page_table = (u64 *)gd->arch.tlb_addr, i, j;
 	int el;
 
-	printf ( "in MMU SETUP, banks = %d\n", CONFIG_NR_DRAM_BANKS );
-	printf ( "in MMU SETUP, table size = %d\n", PGTABLE_SIZE );
+	// printf ( "in MMU SETUP, banks = %d\n", CONFIG_NR_DRAM_BANKS );
+	// printf ( "in MMU SETUP, table size = %d\n", PGTABLE_SIZE );
 
 	/* Setup an identity-mapping for all spaces */
 	for (i = 0; i < (PGTABLE_SIZE >> 3); i++) {
-		set_pgtable_section_tjt (page_table, i, i << SECTION_SHIFT,
-				    MT_DEVICE_NGNRNE, PMD_SECT_NON_SHARE, 0);
+		set_pgtable_section (page_table, i, i << SECTION_SHIFT,
+				    MT_DEVICE_NGNRNE, PMD_SECT_NON_SHARE);
 	}
 
 	/* Setup an identity-mapping for all RAM space */
 	for (i = 0; i < CONFIG_NR_DRAM_BANKS; i++) {
 		ulong start = bd->bi_dram[i].start;
 		ulong end = bd->bi_dram[i].start + bd->bi_dram[i].size;
-	printf ( "in MMU SETUP, start = %08lx\n", start );
-	printf ( "in MMU SETUP, end = %08lx\n", end );
+	// printf ( "in MMU SETUP, start = %08lx\n", start );
+	// printf ( "in MMU SETUP, end = %08lx\n", end );
 		for (j = start >> SECTION_SHIFT; j < end >> SECTION_SHIFT; j++) {
-			set_pgtable_section_tjt (page_table, j, j << SECTION_SHIFT,
-					    MT_NORMAL, PMD_SECT_NON_SHARE, 1);
+			set_pgtable_section (page_table, j, j << SECTION_SHIFT,
+					    MT_NORMAL, PMD_SECT_NON_SHARE );
 		}
 	}
 
@@ -92,7 +92,7 @@ __weak void mmu_setup(void)
 	}
 	/* enable the mmu */
 	set_sctlr(get_sctlr() | CR_M);
-	printf ( "in MMU SETUP, sctrl = %08x\n", get_sctlr() );
+	// printf ( "in MMU SETUP, sctrl = %08x\n", get_sctlr() );
 }
 
 /*
