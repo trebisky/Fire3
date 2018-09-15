@@ -13,6 +13,7 @@ all: uboot
 uboot:
 	dd if=bl1-sd.bin of=${DEV}  bs=512 seek=1 conv=fdatasync
 	dd if=u-boot.bin of=$(DEV) bs=512 seek=129 conv=fdatasync
+	dd if=env.img of=$(DEV) bs=512 seek=5889 conv=fdatasync
 	sync
 
 bl1:
@@ -24,8 +25,18 @@ uboot-sd:
 	dd if=u-boot.img of=${DEV} conv=fdatasync
 	sync
 
-img:
+fetch_img:
 	dd if=${DEV} of=u-boot.img bs=512 count=8192
+	sync
+
+# ------------------------------------
+
+env:
+	dd if=env.img of=$(DEV) bs=512 seek=5889 conv=fdatasync
+	sync
+
+fetch_env:
+	dd if=${DEV} of=env.img bs=512 skip=5889 count=32
 	sync
 
 # THE END
