@@ -31,6 +31,9 @@ fetch_img:
 
 # ------------------------------------
 
+# See U-boot sources include/configs for
+# CONFIG_ENV_SIZE and CONFIG_ENV_OFFSET
+
 env:
 	dd if=env.img of=$(DEV) bs=512 seek=5889 conv=fdatasync
 	sync
