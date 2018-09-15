@@ -1,5 +1,6 @@
 This is a collection of programs I have been writing to run on My NanoPi Fire3 board.
 These are bare metal programming or research projects
+September 2018
 
 This board is based on the Samsung s5p6818 chip.
 
