@@ -19,6 +19,8 @@ What I did to generate this:
 1. -- change the CONFIG_SYS_DRAM_SIZE to 4000_0000
 1. Edit arch/arm/cpu/armv8/start.S
 1. -- add NSIH header
+1. Edit configs/artik710_raptor_defconfig
+1. -- add CONFIG_DHCP=y
 
 I may have done other things that I don't remember.
 This works along with my modified bl1 boot loader without

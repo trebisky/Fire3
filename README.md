@@ -14,6 +14,7 @@ This board is based on the Samsung s5p6818 chip.
 1. Hello1 - simple serial IO, loaded by bl1.
 1. Mini - tiny stub code to debug USB mode of the bl1 bootloader.
 1. USB_loader - host side (linux) tool to download code via USB.
+1. U-Boot - U-Boot hacked to do network booting.
 
 For notes and supporting information, see my website:
 
