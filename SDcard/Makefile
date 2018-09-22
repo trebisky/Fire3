@@ -21,7 +21,7 @@ bl1:
 
 # ------------------------------------
 
-uboot-sd:
+img:
 	dd if=u-boot.img of=${DEV} conv=fdatasync
 	sync
 
