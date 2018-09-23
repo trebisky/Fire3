@@ -54,20 +54,28 @@ struct timer {
 // #define LOAD_VALUE	0x80000	/* 524288 */
 #define LOAD_VALUE	1000000
 
+int tcount = 0;
+
+
 void
 timer_init ( void )
 {
 	struct timer *tp = TIMER_BASE;
 
+#ifdef notdef
 	printf ( "Timer cstat = %08x\n", &tp->int_cstat );
 	printf ( "Tc0 = %08x\n", tp->config0 );
 	printf ( "Tc1 = %08x\n", tp->config1 );
 	printf ( "Tctl = %08x\n", tp->control );
 	printf ( "Cstat = %08x\n", tp->int_cstat );
+	/* See if we can clear an interrupt without setting a bit.
+	 * (we can!)
+	 */
 	tp->int_cstat = T0_ISTAT;
 	printf ( "Cstat = %08x\n", tp->int_cstat );
 	printf ( "T0 = %08x\n", tp->timer[0].obs );
 	// printf ( "T1 = %08x\n", tp->timer[1].obs );
+#endif
 
 	tp->control = 0;
 	tp->timer[0].count = LOAD_VALUE;
@@ -85,6 +93,9 @@ timer_init ( void )
 
 	intcon_ena ( IRQ_TIMER0 );
 	tp->control |= T0_RUN;
+
+	/* We don't yet initialize the BSS */
+	tcount = 0;
 	printf ( "Go\n" );
 
 	/*
@@ -104,18 +115,20 @@ timer_init ( void )
 	*/
 }
 
-int tcount = 0;
-
 void
 timer_handler ( void )
 {
 	struct timer *tp = TIMER_BASE;
 
 	tp->int_cstat |= T0_ISTAT;
-	serial_putc ( '.' );
 	tcount++;
+	printf ( "Timer count = %d\n", tcount );
+
+	/*
+	serial_putc ( '.' );
 	if ( tcount % 10 == 0 )
 	    printf ( "Tcount = %d\n", tcount );
+	*/
 }
 
 /* THE END */
