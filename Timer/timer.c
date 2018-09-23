@@ -25,6 +25,10 @@ struct timer {
 	vu32	int_cstat;		/* 44 */
 };
 
+/* Stopwatch calibration shows that with load value of 0x80000
+ * we get 0.525 seconds.  This is a 998644 Hz clock,
+ * i.e. a 1 Mhz clock.
+ */
 #define TIMER_BASE	((struct timer *) 0xc0017000)
 #define PWM_BASE	((struct timer *) 0xc0018000)
 
@@ -47,6 +51,9 @@ struct timer {
 #define T3_ISTAT		0x100
 #define T4_ISTAT		0x200
 
+// #define LOAD_VALUE	0x80000	/* 524288 */
+#define LOAD_VALUE	1000000
+
 void
 timer_init ( void )
 {
@@ -63,8 +70,10 @@ timer_init ( void )
 	// printf ( "T1 = %08x\n", tp->timer[1].obs );
 
 	tp->control = 0;
-	tp->timer[0].count = 0x40000;
-	tp->timer[0].cmp = 1;
+	tp->timer[0].count = LOAD_VALUE;
+	tp->timer[0].cmp = 0;
+
+	/* Pulse the load bit */
 	tp->control = T0_AUTO | T0_LOAD;
 	tp->control = T0_AUTO;
 
@@ -76,6 +85,7 @@ timer_init ( void )
 
 	intcon_ena ( IRQ_TIMER0 );
 	tp->control |= T0_RUN;
+	printf ( "Go\n" );
 
 	/*
 	for ( ;; ) {
@@ -94,6 +104,8 @@ timer_init ( void )
 	*/
 }
 
+int tcount = 0;
+
 void
 timer_handler ( void )
 {
@@ -101,6 +113,9 @@ timer_handler ( void )
 
 	tp->int_cstat |= T0_ISTAT;
 	serial_putc ( '.' );
+	tcount++;
+	if ( tcount % 10 == 0 )
+	    printf ( "Tcount = %d\n", tcount );
 }
 
 /* THE END */
