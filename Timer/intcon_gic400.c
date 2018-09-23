@@ -270,10 +270,11 @@ gic_init ( void )
 void
 gic_test ( void )
 {
-	struct gic400_dist *gp = GIC_DIST_BASE;
-	struct gic400_cpu *cp = GIC_CPU_BASE;
+	// struct gic400_dist *gp = GIC_DIST_BASE;
+	// struct gic400_cpu *cp = GIC_CPU_BASE;
 	int i;
 
+	/*
 	printf ( "GIC sgi at = %08x\n", &gp->sgi );
 	printf ( "GIC t0 at = %08x\n", &gp->target[0] );
 	printf ( "GIC s0 at = %08x\n", &gp->spi_stat[0] );
@@ -283,6 +284,7 @@ gic_test ( void )
 
 	printf ( "GIC type = %08x\n", gp->type );
 	printf ( "GIC iid = %08x\n", gp->iidr );
+	*/
 
 	for ( i=0; i<16; i++ ) {
 	    intcon_ena ( IRQ_SGI_0 + i );
@@ -291,7 +293,6 @@ gic_test ( void )
 	for ( i=0; i<16; i++ ) {
 	    printf ( "SGI %d\n", i );
 	    gic_soft_self ( SGI_0 + i );
-	    printf ( "\n" );
 	}
 }
 

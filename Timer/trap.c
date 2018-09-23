@@ -2,6 +2,7 @@
 
 #include "hello.h"
 #include "types.h"
+#include "fire3_ints.h"
 
 unsigned int GetCurrentSMode(void);
 unsigned int GetCPUID(void);
@@ -102,7 +103,10 @@ handle_irq ( void )
 	int n;
 
 	n = intcon_irqwho();
-	printf ( "IRQ: %d\n", n );
+	if ( n == IRQ_TIMER0 )
+	    timer_handler ();
+	else
+	    printf ( "IRQ: %d\n", n );
 	intcon_irqack ( n );
 }
 

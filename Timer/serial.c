@@ -104,7 +104,7 @@ struct gpio_regs {
 
 #define LED_BIT	(1<<12)
 
-static void
+void
 delay ( int count )
 {
 	while ( count )

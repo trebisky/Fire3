@@ -67,14 +67,14 @@ main ( void )
 {
 	serial_init ();
 	gic_init ();
-	// timer_init ();
+	timer_init ();
 
 	printf ( "\n" );
 	printf ( "Hello world\n" );
 
 	INT_unlock ();
 
-	gic_test ();
+	// gic_test ();
 
 	/*
 	printf ( "int is: %d bytes\n", sizeof(int) );

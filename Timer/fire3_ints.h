@@ -48,6 +48,20 @@
 #define IRQ_PPI_14	30
 #define IRQ_PPI_15	31
 
+#define IRQ_BASE	32
+
+#define IRQ_TIMER0	IRQ_BASE + 23
+#define IRQ_TIMER1	IRQ_BASE + 24
+#define IRQ_TIMER2	IRQ_BASE + 25
+#define IRQ_TIMER3	IRQ_BASE + 26
+
+#define IRQ_UART0	IRQ_BASE + 7
+#define IRQ_UART1	IRQ_BASE + 6
+#define IRQ_UART2	IRQ_BASE + 8
+#define IRQ_UART3	IRQ_BASE + 9
+#define IRQ_UART4	IRQ_BASE + 10
+#define IRQ_UART5	IRQ_BASE + 11
+
 #ifdef notdef
 /* Allwinner H3 */
 #define IRQ_UART0	32
