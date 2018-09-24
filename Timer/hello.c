@@ -61,6 +61,36 @@ INT_lock ( void )
 	asm volatile("msr DAIFSet, #3" : : : "cc");
 }
 
+/* ARM v8 Performance monitor testing */
+
+void
+pm_test ( void )
+{
+	unsigned long ccval;
+	unsigned long val;
+	int i;
+
+	asm volatile("mrs %0, pmcntenset_el0" : "=r" (val) : : "cc");
+	printf ( "PMCNTENSET = %x\n", val );
+	asm volatile("mrs %0, pmcr_el0" : "=r" (val) : : "cc");
+	printf ( "PMCR = %x\n", val );
+
+	val = 0x80000000;
+	asm volatile("msr pmcntenset_el0, %0" : : "r" (val) : "cc");
+	val = 1;
+	asm volatile("msr pmcr_el0, %0" : : "r" (val) : "cc");
+
+	asm volatile("mrs %0, pmcntenset_el0" : "=r" (val) : : "cc");
+	printf ( "PMCNTENSET = %x\n", val );
+	asm volatile("mrs %0, pmcr_el0" : "=r" (val) : : "cc");
+	printf ( "PMCR = %x\n", val );
+
+	for ( i=0; i<5; i++ ) {
+	    asm volatile("mrs %0, pmccntr_el0" : "=r" (ccval) : : "cc");
+	    printf ( "CCNT = %d\n", ccval );
+	}
+}
+
 
 void
 main ( void )
@@ -72,17 +102,19 @@ main ( void )
 	printf ( "\n" );
 	printf ( "Hello world\n" );
 
-	INT_unlock ();
+	// INT_unlock ();
 
 	// gic_test ();
 
-	/*
 	printf ( "int is: %d bytes\n", sizeof(int) );
 	printf ( "long is: %d bytes\n", sizeof(long) );
-	printf ( "ll is: %d bytes\n", sizeof(vu64) );
-	*/
+	printf ( "ll is: %d bytes\n", sizeof(long long) );
 
 	printf ( "Waiting ...\n" );
+
+	// serial_test ();
+
+	pm_test ();
 
 	for ( ;; )
 	    ;

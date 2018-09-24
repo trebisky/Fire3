@@ -9,7 +9,8 @@
 #include "s5p6818-artik710.dtsi"
 
 / {
-	model = "Samsung artik710 raptor board based on Nexell s5p6818";
+	/* model = "Samsung artik710 raptor board based on Nexell s5p6818"; */
+	model = "NanoPi Fire3 board based on Samsung/Nexell s5p6818";
 	cpu-model = "S5p6818";
 
 	compatible = "samsung,artik710-raptor", "samsung,artik710",

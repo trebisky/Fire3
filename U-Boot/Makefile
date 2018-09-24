@@ -839,6 +839,9 @@ update:
 sdcard:
 	dd if=u-boot.bin of=/dev/sdf bs=512 seek=129 conv=fdatasync
 
+sdzap:
+	dd if=/dev/zero of=/dev/sdf bs=512 seek=129 count=950
+
 
 PHONY += dtbs
 dtbs dts/dt.dtb: checkdtc u-boot

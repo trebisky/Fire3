@@ -16,8 +16,14 @@ uboot:
 	dd if=env.img of=$(DEV) bs=512 seek=5889 conv=fdatasync
 	sync
 
-bl1:
+bl1-usb:
 	dd if=bl1-usb.bin of=${DEV} bs=512 seek=1 conv=fdatasync
+
+bl1-sd:
+	dd if=bl1-sd.bin of=${DEV} bs=512 seek=1 conv=fdatasync
+
+zap:
+	dd if=/dev/zero of=${DEV} bs=512 seek=1 count=8192
 
 # ------------------------------------
 

@@ -3,6 +3,8 @@
  * Tom Trebisky 8-31-2018
  */
 
+#include "hello.h"
+
 typedef volatile unsigned int vu32;
 
 void blink_init ( void );
@@ -46,6 +48,7 @@ struct serial *uart_base[] = {
 #define CONSOLE_BASE	(struct serial *) 0xC00a1000;
 
 #define	FIFO_FULL	0x01000000
+#define RX_FIFO_COUNT   0x0000007f
 
 void
 serial_init ( void )
@@ -66,6 +69,28 @@ serial_putc ( int c )
 	    ;
 
 	up->txh = c;
+}
+
+int
+serial_getc ( void )
+{
+	struct serial *up = CONSOLE_BASE;
+
+        while ( ! (up->fstat & RX_FIFO_COUNT) )
+                ;
+
+        return up->rxh & 0xff;
+}
+
+void
+serial_test ( void )
+{
+	int x;
+
+	for ( ;; ) {
+	    x = serial_getc ();
+	    printf ( "Serial: %02x %c\n", x, x );
+	}
 }
 
 /* ----------------------------------------- */

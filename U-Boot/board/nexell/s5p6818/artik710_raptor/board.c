@@ -74,7 +74,9 @@ static void set_board_rev(u32 revision)
 #ifdef CONFIG_DISPLAY_BOARDINFO
 int checkboard(void)
 {
-	printf("\nBoard: ARTIK710 Raptor\n");
+	// printf("\nBoard: ARTIK710 Raptor\n");
+	// tjt
+	printf("\nBoard: NanoPi Fire3\n");
 
 	return 0;
 }
