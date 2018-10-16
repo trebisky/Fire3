@@ -39,7 +39,11 @@
 ; set the CPSR register to 0xD3
       50:	e321f0d3 	msr	CPSR_c, #211	; 0xd3
 
-; read the processor feature register
+; read the multiprocessor affinity register
+; The test on 0x4400 checks for cluster bits set,
+; if so, bit 4 is set, then the mask 0xf grabs a 4 bit
+; value 0-15 that is the processor number that stays in "ip"
+
       54:	ee10cfb0 	mrc	15, 0, ip, cr0, cr0, {5}
       58:	e31c0b11 	tst	ip, #17408	; 0x4400
       5c:	138cc004 	orrne	ip, ip, #4
@@ -47,6 +51,7 @@
       64:	e35c0000 	cmp	ip, #0
       68:	1a00001d 	bne	0xe4
 
+; fall through only if processor 0
 ; r0 = 0xc0000000 | 0x11000 --> 0xc0011000
 
       6c:	e3a00103 	mov	r0, #-1073741824		; 0xc0000000
@@ -85,7 +90,9 @@
       dc:	e5801178 	str	r1, [r0, #376]	; 0x178
       e0:	e58021bc 	str	r2, [r0, #444]	; 0x1bc
 
+; secondary processor comes directly to here.
 ; set VBAR from 0x1cc (to 0)
+
       e4:	e59f00e0 	ldr	r0, [pc, #224]	; 0x1cc
       e8:	ee0c0f10 	mcr	15, 0, r0, cr12, cr0, {0}
 
@@ -98,8 +105,11 @@
       f8:	e3a00000 	mov	r0, #0
       fc:	ee070f15 	mcr	15, 0, r0, cr7, cr5, {0}	; ICIALLU
      100:	ee070fd5 	mcr	15, 0, r0, cr7, cr5, {6}	; BPIALL
+
+; are we a secondary processor ?
      104:	e35c0000 	cmp	ip, #0
      108:	1a00001d 	bne	0x184
+
      10c:	e3a00103 	mov	r0, #-1073741824	; 0xc0000000
      110:	e3800801 	orr	r0, r0, #65536	; 0x10000
      114:	e3e01000 	mvn	r1, #0
@@ -141,11 +151,18 @@
      17c:	e12fff10 	bx	r0
      180:	e3a0f000 	mov	pc, #0
 
- ; branched to from above
- ; r0 = 0xc0010230
+
+; We come here if we are a secondary processor
+; r0 = 0xc0010230
      184:	e3a00103 	mov	r0, #-1073741824	; 0xc0000000
      188:	e3800801 	orr	r0, r0, #65536		; 0x10000
      18c:	e3800e23 	orr	r0, r0, #560		; 0x230
+
+; loop around WFI instruction
+; monitors the location r0 is pointing to (0xc0010230)
+; this looks a lot like the PSCI scheme for starting secondary processors
+; So, a secondary processor ends up here, spinning around a wfi
+; and monitoring 0xc0010230
 
      190:	e320f003 	wfi
      194:	e5901000 	ldr	r1, [r0]
