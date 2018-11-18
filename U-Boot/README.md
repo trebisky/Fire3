@@ -3,6 +3,18 @@ I didn't fork that because I didn't want all of the branches.
 It has been modified to run on the NanoPi Fire3, which is a
 Samsung S5P6818 board just like the Fire3.
 
+To build this and put it onto a bootable SD card, use the
+following commands.  Note you will need a proper C compiler
+(such as aarch64-linux-gnu-gcc), and you should have placed
+the bl1 boot loader onto the SD card first (see SDcard in
+this collection of projects)
+
+make artik710_raptor_defconfig
+
+make
+
+make sdcard
+
 In particular, as configured, this offers network support,
 which the Friendly Arm U-boot does not.  I currently use this
 code on my Fire3 to do DHCP, then TFTP a binary, which allows
