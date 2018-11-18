@@ -9,11 +9,9 @@ following commands.  Note you will need a proper C compiler
 the bl1 boot loader onto the SD card first (see SDcard in
 this collection of projects)
 
-make artik710_raptor_defconfig
-
-make
-
-make sdcard
+1. make artik710_raptor_defconfig
+1. make
+1. make sdcard
 
 In particular, as configured, this offers network support,
 which the Friendly Arm U-boot does not.  I currently use this
