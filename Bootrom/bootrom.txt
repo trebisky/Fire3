@@ -30,6 +30,7 @@
       38:	ffff0018	; IRQ
       3c:	ffff001c	; FIQ
 
+; Reset ends up here.
 ; clear some bits in the SCTLR register
       40:	ee110f10 	mrc	15, 0, r0, cr1, cr0, {0}
       44:	e3c00b0e 	bic	r0, r0, #14336	; 0x3800
@@ -37,12 +38,15 @@
       4c:	ee010f10 	mcr	15, 0, r0, cr1, cr0, {0}
 
 ; set the CPSR register to 0xD3
+; This disables I and F interrupts
+; This selects SVC (Supervisor) mode
       50:	e321f0d3 	msr	CPSR_c, #211	; 0xd3
 
 ; read the multiprocessor affinity register
 ; The test on 0x4400 checks for cluster bits set,
 ; if so, bit 4 is set, then the mask 0xf grabs a 4 bit
 ; value 0-15 that is the processor number that stays in "ip"
+; (so in our case, we get 0-7 for processor number)
 
       54:	ee10cfb0 	mrc	15, 0, ip, cr0, cr0, {5}
       58:	e31c0b11 	tst	ip, #17408	; 0x4400
@@ -110,6 +114,7 @@
      104:	e35c0000 	cmp	ip, #0
      108:	1a00001d 	bne	0x184
 
+; primary processor falls through to here.
      10c:	e3a00103 	mov	r0, #-1073741824	; 0xc0000000
      110:	e3800801 	orr	r0, r0, #65536	; 0x10000
      114:	e3e01000 	mvn	r1, #0
@@ -143,6 +148,7 @@
 ; Make it point just after the end of on-chip static RAM
 ;  which makes perfect sense.
 ; sp = 0xffff0000 + 0x10000 = 0
+; then call location 0x200 (below)
      16c:	e3a0d4ff 	mov	sp, #-16777216	; 0xff000000
      170:	e38dd8ff 	orr	sp, sp, #16711680	; 0xff0000
      174:	e28dd801 	add	sp, sp, #65536	; 0x10000
@@ -158,11 +164,18 @@
      188:	e3800801 	orr	r0, r0, #65536		; 0x10000
      18c:	e3800e23 	orr	r0, r0, #560		; 0x230
 
+; this is where secondary cores park until they get moved elsewhere.
 ; loop around WFI instruction
 ; monitors the location r0 is pointing to (0xc0010230)
 ; this looks a lot like the PSCI scheme for starting secondary processors
 ; So, a secondary processor ends up here, spinning around a wfi
 ; and monitoring 0xc0010230
+; Note that cmn adds the #1 to the value, discarding the result and setting flags
+; So if the magic location is 0xffffffff, adding 1, wraps to zero,
+; meaning to this loop, "nothing to do yet".
+; Note that nothing here checks the cpu number, so it must be
+; necessary to start the secondary processors one at a time,
+; let them park here for a while, then move them elsewhere.
 
      190:	e320f003 	wfi
      194:	e5901000 	ldr	r1, [r0]
@@ -184,7 +197,7 @@
      1c0:	20343130
      1c4:	353a3332
      1c8:	32343a35
-     1cc:	00000000
+     1cc:	00000000	; Initial VBAR value.
 
      1d0:	e320f000 	nop	{0}
      1d4:	e320f000 	nop	{0}
