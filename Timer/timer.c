@@ -4,7 +4,7 @@
  */
 
 #include "types.h"
-#include "hello.h"
+#include "protos.h"
 #include "fire3_ints.h"
 
 #define N_TIMERS	5
@@ -115,6 +115,7 @@ timer_init ( void )
 	*/
 }
 
+/* If this gets called, we are getting interrupts */
 void
 timer_handler ( void )
 {
@@ -122,7 +123,7 @@ timer_handler ( void )
 
 	tp->int_cstat |= T0_ISTAT;
 	tcount++;
-	printf ( "Timer count = %d\n", tcount );
+	printf ( "Timer count (interrupt) = %d\n", tcount );
 
 	/*
 	serial_putc ( '.' );

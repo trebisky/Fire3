@@ -5,12 +5,23 @@
  */
 
 #include <types.h>
-#include <hello.h>
+#include <protos.h>
 
-#ifdef notdef
-/*
- * see u-boot: arch/arm/include/asm/system.h
- */
+/* This really belongs in start.S */
+static void
+el2_fixup ( void )
+{
+        unsigned long lval;
+
+        /* set the FMO and IMO bits
+		 * This indicates that FIQ and IRQ should
+		 * be handled at EL2
+		 */
+		asm volatile("mrs %0, hcr_el2" : "=r" (lval) : : "cc");
+        lval |= 0x18;
+        asm volatile("msr hcr_el2, %0" : : "r" (lval) : "cc");
+}
+
 
 static inline unsigned int
 get_el(void)
@@ -20,6 +31,11 @@ get_el(void)
         asm volatile("mrs %0, CurrentEL" : "=r" (val) : : "cc");
         return val >> 2;
 }
+
+#ifdef notdef
+/*
+ * see u-boot: arch/arm/include/asm/system.h
+ */
 
 static inline unsigned int
 get_sctlr(void)
@@ -91,6 +107,14 @@ pm_test ( void )
 	}
 }
 
+static void
+show_el ( void )
+{
+	int el;
+
+	el = get_el();
+	printf ( "Current EL = %d\n", el );
+}
 
 void
 main ( void )
@@ -102,7 +126,13 @@ main ( void )
 	printf ( "\n" );
 	printf ( "Hello world\n" );
 
-	// INT_unlock ();
+	show_el ();
+
+	printf ( "Apply HCR interrupt fix, 12-17-2025\n" );
+	el2_fixup ();
+
+	printf ( "Enable interrupts\n" );
+	INT_unlock ();
 
 	// gic_test ();
 

@@ -1,35 +1,15 @@
 /* start.S
- * This is a minimal startup file for a
+ *
+ * This is a startup file for a U-boot loaded
  * bare metal program that runs on the Fire3.
  *
- * Tom Trebisky 9-16-2018
+ * Tom Trebisky 9-16-2018, 12-17-2025
  *
- * With the NSIH header configured, this
- * is intended to be loaded by the bl1 loader.
- * Without it (or with it for that matter), that is
- * is intended to be loaded by U-Boot tftp
  */
 
 .globl  start
 start:
-
-#ifdef CONFIG_NSIH_HEADER
-        b       after
-
-        .skip   60
-        .word 0x00000000    // 0x040 : Device Read Address for next boot
-        .word 0x00010000    // 0x044 : Load Size for this
-        .word 0x40000000    // 0x048 : Load Address for this
-        .word 0x40000000    // 0x04C : Launch Address for this
-
-        .skip 428
-        .word 0x4849534E    // 0x1FC        "NSIH"
-
-        .align 3
-after:
-#endif
-
-reset:
+// reset:
 	bl	remap_vectors
 	bl	main
 	b	.
@@ -42,10 +22,10 @@ reset:
 GetCPUID:
         mrs     x1, MPIDR_EL1
         and     x0, x1, #0x3
-	tst     x1, 0xff00
-	beq     1f
-	orr     x0, x0, 4
-1:	ret
+		tst     x1, 0xff00
+		beq     1f
+		orr     x0, x0, 4
+1:		ret
 
 // unsigned int GetCurrentSMode(void);
 .global GetCurrentSMode
@@ -92,6 +72,7 @@ remap_vectors:
 
 1:  mov     x0, x29
     add     x2, sp, 8
+
     bl      sync_handler
 
     ldp     xzr, x0,  [sp], 16
@@ -138,15 +119,15 @@ remap_vectors:
 vectors_el2:
 	panic /* 0x000 Current EL w/ SP0 - Synchronous Thread */
 	panic /* 0x080 Current EL w/ SP0 - IRQ Thread */
-        panic /* 0x100 Current EL w/ SP0 - FIQ Thread */
-        panic /* 0x180 Current EL w/ SP0 - Error Thread */
+	panic /* 0x100 Current EL w/ SP0 - FIQ Thread */
+	panic /* 0x180 Current EL w/ SP0 - Error Thread */
 
-        panic /* 0x200 Current EL w/ SPx - Synchronous Handler */
-        panic /* 0x280 Current EL w/ SPx - IRQ Handler */
-        panic /* 0x300 Current EL w/ SPx - FIQ Handler */
-        panic /* 0x380 Current EL w/ SPx - Error Handler */
+	panic /* 0x200 Current EL w/ SPx - Synchronous Handler */
+	panic /* 0x280 Current EL w/ SPx - IRQ Handler */
+	panic /* 0x300 Current EL w/ SPx - FIQ Handler */
+	panic /* 0x380 Current EL w/ SPx - Error Handler */
 
-        panic /* 0x400 Lower EL 64 bit - Synch */
+	panic /* 0x400 Lower EL 64 bit - Synch */
 	panic /* 0x480 Lower EL 64 bit - IRQ */
 	panic /* 0x500 Lower EL 64 bit - FIQ */
 	panic /* 0x580 Lower EL 64 bit - Error */

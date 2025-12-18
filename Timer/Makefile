@@ -1,10 +1,12 @@
 # Makefile for Hello1
-# Tom Trebisky  8-31-2018
+# Tom Trebisky  8-31-2018, 12-17-2025
 # tom@mmto.org
+#
+# This is intended to be loaded by U-boot
 
 # -------------------------------------
 
-OBJS = start.o trap.o hello.o serial.o timer.o intcon_gic400.o printf.o
+OBJS = start.o trap.o main.o serial.o timer.o intcon_gic400.o printf.o
 
 CROSS_COMPILE = aarch64-linux-gnu-
 
@@ -18,14 +20,13 @@ LDFLAGS		:=	-Bstatic \
 			-Wl,--start-group \
 			-Wl,--end-group \
 			-Wl,--build-id=none \
-			-nostdlib
+			-nostdlib \
+			-Wl,--no-warn-rwx-segments
 
 CC			=	$(CROSS_COMPILE)gcc $(CFLAGS)
 LD 			=	$(CROSS_COMPILE)gcc $(LDFLAGS)
 OBJCOPY			=	$(CROSS_COMPILE)objcopy
 DUMP			=	$(CROSS_COMPILE)objdump
-
-LOAD			=	usb_loader
 
 .c.o:
 	@echo " [CC]   $<"
@@ -51,16 +52,6 @@ hello.bin: hello.elf
 
 dis: hello.elf
 	$(DUMP) -d hello.elf -z >hello.dis
-
-# -------------------
-# You will need to be root for either of these to work.
-# Only "sdcard" will work, unless you have a special bl1.
-
-usb:  hello.bin
-	$(LOAD) hello.bin
-
-sdcard:  hello.bin
-	dd if=hello.bin of=/dev/sdf seek=129 conv=fdatasync
 
 .PHONY: clean
 clean:
