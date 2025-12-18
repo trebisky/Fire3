@@ -1,8 +1,12 @@
 This is a collection of programs I have been writing to run on My NanoPi Fire3 board.
 These are bare metal programming or research projects
-September 2018
+September 2018, December 2025
 
 This board is based on the Samsung s5p6818 chip.
+
+I have only one demo (so far) that gets started by U-boot
+
+1. Timer - do something with timer interrupts (working, 12-2025)
 
 First some tools to do bare metal programming
 
