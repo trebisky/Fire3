@@ -1,12 +1,25 @@
-/* hello - basic serial IO on the Fire3
+/* main.c - test timer interrupts on the Fire3
+ *
+ * Tom Trebisky  12-17-2025
  *
  * Grew into some exploring of system status,
- *  as well as alignment issues.
+ *  as well as alignment issues and various
+ *   other things.
  */
 
 #include <types.h>
 #include <protos.h>
 
+/*
+ * Take note of el2_fixup()
+ * 12-17-2025
+ * To my surprise, this is NOT needed for the Fire3!!
+ * I did a special build of U-boot for the Fire3,
+ * so my guess is that U-boot is setting these bits.
+ * In fact (see below) the IMO bit is apparently set
+ * for us by U-boot.
+ */
+#ifdef notdef
 /* This really belongs in start.S */
 static void
 el2_fixup ( void )
@@ -21,7 +34,25 @@ el2_fixup ( void )
         lval |= 0x18;
         asm volatile("msr hcr_el2, %0" : : "r" (lval) : "cc");
 }
+#endif
 
+/* I see this:
+ *   HCR = 80000012
+ *
+ *     bit 4 is IMO 0x10 - routing IRQ to el2
+ *     bit 3 is FMO 0x10 - routing FIQ to el2
+ *
+ * So what makes interrupts work is the IMO setting that
+ *  U-boot apparently did for us.
+ */
+static void
+show_hcr ( void )
+{
+        unsigned long lval;
+
+		asm volatile("mrs %0, hcr_el2" : "=r" (lval) : : "cc");
+		printf ( "HCR = %x\n", lval );
+}
 
 static inline unsigned int
 get_el(void)
@@ -128,8 +159,9 @@ main ( void )
 
 	show_el ();
 
-	printf ( "Apply HCR interrupt fix, 12-17-2025\n" );
-	el2_fixup ();
+	// printf ( "Apply HCR interrupt fix, 12-17-2025\n" );
+	// el2_fixup ();
+	show_hcr ();
 
 	printf ( "Enable interrupts\n" );
 	INT_unlock ();

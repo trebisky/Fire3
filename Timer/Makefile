@@ -1,4 +1,5 @@
-# Makefile for Hello1
+# Makefile for the Fire3 timer demo
+#
 # Tom Trebisky  8-31-2018, 12-17-2025
 # tom@mmto.org
 #
@@ -16,7 +17,7 @@ CFLAGS		+= -mtune=cortex-a53
 CFLAGS		+= -I.
 
 LDFLAGS		:=	-Bstatic \
-			-Thello.lds \
+			-Ttimer.lds \
 			-Wl,--start-group \
 			-Wl,--end-group \
 			-Wl,--build-id=none \
@@ -38,20 +39,20 @@ DUMP			=	$(CROSS_COMPILE)objdump
 
 # -------------------------------------
 
-#all: hello.bin
+#all: timer.bin
 all: install
 
-install:	hello.bin
-	cp hello.bin /var/lib/tftpboot/fire3.bin
+install:	timer.bin
+	cp timer.bin /var/lib/tftpboot/fire3.bin
 
-hello.elf: $(OBJS)
-	$(LD) $(OBJS) -o hello.elf
+timer.elf: $(OBJS)
+	$(LD) $(OBJS) -o timer.elf
 
-hello.bin: hello.elf
-	$(OBJCOPY) -O binary hello.elf hello.bin
+timer.bin: timer.elf
+	$(OBJCOPY) -O binary timer.elf timer.bin
 
-dis: hello.elf
-	$(DUMP) -d hello.elf -z >hello.dis
+dis: timer.elf
+	$(DUMP) -d timer.elf -z >timer.dis
 
 .PHONY: clean
 clean:
